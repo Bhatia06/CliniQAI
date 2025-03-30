@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare AI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0656fa;
+            --secondary-color: #61c7fa;
+            --accent-color: #2a74d5;
+            --dark-bg: #121630;
+            --darker-bg: #07091c;
+            --light-text: #ecf0ff;
+            --card-bg: #172049;
+            --ai-color: #8e2de2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body { 
+            font-family: 'Exo 2', sans-serif;
+            line-height: 1.6;
+            color: var(--light-text);
+            background: var(--darker-bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(6, 86, 250, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(97, 199, 250, 0.1) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: rgba(7, 9, 28, 0.7);
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        h1 { 
+            color: var(--light-text);
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dashboard-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-weight: 400;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .portal-cards {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .portal-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            width: 350px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #1d2a5e;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .portal-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+        
+        .doctor-card::before {
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+        }
+        
+        .patient-card::before {
+            background: linear-gradient(90deg, #2193b0, #6dd5ed);
+        }
+        
+        .ai-model-card::before {
+            background: linear-gradient(90deg, #8e2de2, #4a00e0);
+        }
+        
+        .portal-card h3 {
+            color: var(--light-text);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+        
+        .portal-card p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        .portal-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(6, 86, 250, 0.3);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .portal-btn:hover {
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(6, 86, 250, 0.4);
+        }
+        
+        .doctor-btn {
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+        }
+        
+        .doctor-btn:hover {
+            background: linear-gradient(45deg, #2a5298, #1e3c72);
+        }
+        
+        .patient-btn {
+            background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        }
+        
+        .patient-btn:hover {
+            background: linear-gradient(45deg, #6dd5ed, #2193b0);
+        }
+        
+        .ai-model-btn {
+            background: linear-gradient(45deg, #8e2de2, #4a00e0);
+        }
+        
+        .ai-model-btn:hover {
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+        }
+        
+        .portal-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        footer {
+            background: rgba(7, 9, 28, 0.7);
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Healthcare AI System</h1>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="dashboard-section">
+            <h2>Welcome to the Healthcare AI Dashboard</h2>
+            <p>This integrated system provides advanced tools for both medical professionals and patients, enhancing the care experience through AI-powered analysis and communication.</p>
+            
+            <div class="portal-cards">
+                <div class="portal-card doctor-card">
+                    <div class="portal-icon">👨‍⚕️</div>
+                    <h3>Doctor Portal</h3>
+                    <p>Access advanced ADR analysis tools, patient records, and clinical decision support for healthcare professionals.</p>
+                    <a href="/doctor-portal" class="portal-btn doctor-btn">Access Doctor Portal</a>
+                </div>
+                
+                <div class="portal-card patient-card">
+                    <div class="portal-icon">👤</div>
+                    <h3>Patient Portal</h3>
+                    <p>Easily report symptoms, communicate with healthcare providers, and manage your personal health information.</p>
+                    <a href="/patient-portal" class="portal-btn patient-btn">Access Patient Portal</a>
+                </div>
+                
+                <div class="portal-card ai-model-card">
+                    <div class="portal-icon">🤖</div>
+                    <h3>AI Chatbot</h3>
+                    <p>Get advanced biomedical insights when standard database searches don't return results.</p>
+                    <a href="/ai-model" class="portal-btn ai-model-btn">Access AI Chatbot</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Healthcare AI System. All rights reserved.</p>
+    </footer>
+</body>
+</html>

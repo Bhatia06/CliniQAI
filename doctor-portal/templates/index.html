@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Portal - ADR Analysis System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0656fa;
+            --secondary-color: #61c7fa;
+            --accent-color: #2a74d5;
+            --dark-bg: #121630;
+            --darker-bg: #07091c;
+            --light-text: #ecf0ff;
+            --card-bg: #172049;
+            --input-bg: #070e2c;
+            --success-color: #00e676;
+            --error-color: #ff3d71;
+            --warning-color: #ffae00;
+            --ai-color: #8e2de2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body { 
+            font-family: 'Exo 2', sans-serif;
+            line-height: 1.6;
+            color: var(--light-text);
+            background: var(--darker-bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(6, 86, 250, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(97, 199, 250, 0.1) 0%, transparent 40%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container { 
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            position: relative;
+        }
+        
+        h1 { 
+            color: var(--light-text);
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        h2 { 
+            color: var(--primary-color);
+            font-weight: 400;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .card { 
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgb(0, 0, 0);
+            border: 1px solid #1d2a5e;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .form-group { 
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label { 
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: var(--light-text);
+            font-size: 1rem;
+        }
+        
+        input, select, textarea { 
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--light-text);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(6, 86, 250, 0.3);
+        }
+        
+        button { 
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(6, 86, 250, 0.3);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+        }
+        
+        button:hover { 
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 86, 250, 0.4);
+        }
+        
+        .search-btn { 
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            margin-bottom: 15px;
+        }
+        
+        .search-btn:hover { 
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+        }
+        
+        .ai-btn {
+            background: linear-gradient(45deg, var(--ai-color), #4a00e0);
+            margin-top: 15px;
+            margin-bottom: 15px;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .ai-btn:hover {
+            background: linear-gradient(45deg, #4a00e0, var(--ai-color));
+        }
+        
+        .error-message { 
+            color: var(--error-color);
+            background-color: rgba(255, 61, 113, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid var(--error-color);
+        }
+        
+        .warning-message {
+            color: var(--warning-color);
+            background-color: rgba(255, 174, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .success-message { 
+            color: var(--success-color);
+            background-color: rgba(0, 230, 118, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 0;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .result-card {
+            background: rgba(23, 32, 73, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+        
+        .severity-mild {
+            background-color: rgba(0, 230, 118, 0.2);
+            color: var(--success-color);
+        }
+        
+        .severity-moderate {
+            background-color: rgba(255, 174, 0, 0.2);
+            color: var(--warning-color);
+        }
+        
+        .severity-severe {
+            background-color: rgba(255, 61, 113, 0.2);
+            color: var(--error-color);
+        }
+        
+        .results-stats {
+            background: rgba(6, 86, 250, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .match-rate-bar {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .match-rate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b347, #00e676);
+            border-radius: 10px;
+        }
+        
+        .highlight {
+            background-color: rgba(6, 86, 250, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            border: 1px solid rgba(6, 86, 250, 0.5);
+            font-weight: bold;
+        }
+        
+        .ai-option-container {
+            text-align: center;
+            padding: 20px;
+            background: rgba(142, 45, 226, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid rgba(142, 45, 226, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Portal</h1>
+        <p>Advanced search for adverse drug reactions by drug and pre-existing conditions</p>
+        
+        <div class="card">
+            <h2>Search Adverse Drug Reactions</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="drug-name">Drug Name</label>
+                    <select id="drug-name">
+                        <option value="">-- Select a drug --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="condition-name">Pre-existing Conditions</label>
+                    <input type="text" id="condition-name" placeholder="Enter pre-existing conditions">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="current-medication">Current Medication (Optional)</label>
+                <input type="text" id="current-medication" placeholder="Enter current medications">
+            </div>
+            
+            <div class="form-group">
+                <button id="search-btn" class="search-btn">Search for ADRs</button>
+            </div>
+            
+            <div id="message-box" class="error-message"></div>
+            <div id="ai-option" style="display: none;" class="ai-option-container">
+                <p>No matching records found in our database. Use our AI-powered Biomedical Chatbot for additional insights.</p>
+                <a href="http://localhost:8084/" class="ai-btn portal-btn" target="_blank">Consult AI Chatbot</a>
+            </div>
+        </div>
+        
+        <div id="results-section" style="display: none;">
+            <div class="card">
+                <h2>Search Results</h2>
+                <div id="results-stats"></div>
+                <div id="results-container"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Base URL for API
+            const API_URL = 'http://localhost:8082';
+            
+            // Elements
+            const drugSelect = document.getElementById('drug-name');
+            const conditionInput = document.getElementById('condition-name');
+            const medicationInput = document.getElementById('current-medication');
+            const searchBtn = document.getElementById('search-btn');
+            const messageBox = document.getElementById('message-box');
+            const resultsSection = document.getElementById('results-section');
+            const resultsStats = document.getElementById('results-stats');
+            const resultsContainer = document.getElementById('results-container');
+            const aiOption = document.getElementById('ai-option');
+            
+            // Fetch drug names for dropdown
+            fetch(`${API_URL}/api/drugs`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        data.drugs.forEach(drug => {
+                            const option = document.createElement('option');
+                            option.value = drug;
+                            option.textContent = drug;
+                            drugSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching drugs:', error);
+                    showMessage('Unable to connect to the server. Please check your connection and try again.', 'error');
+                });
+                
+            // Search button click handler
+            searchBtn.addEventListener('click', function() {
+                // Get values
+                const drug = drugSelect.value.trim();
+                const condition = conditionInput.value.trim();
+                const medication = medicationInput.value.trim();
+                
+                // Validate
+                if (!drug || !condition) {
+                    showMessage('Please select a drug and enter pre-existing conditions', 'error');
+                    return;
+                }
+                
+                // Clear previous results
+                resultsContainer.innerHTML = '';
+                resultsStats.innerHTML = '';
+                messageBox.style.display = 'none';
+                resultsSection.style.display = 'none';
+                aiOption.style.display = 'none';
+                
+                // Show loading
+                searchBtn.textContent = 'Searching...';
+                searchBtn.disabled = true;
+                
+                // Make API request
+                fetch(`${API_URL}/api/search?drug=${encodeURIComponent(drug)}&condition=${encodeURIComponent(condition)}&current_medication=${encodeURIComponent(medication)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchBtn.textContent = 'Search for ADRs';
+                        searchBtn.disabled = false;
+                        
+                        if (data.success) {
+                            if (data.count > 0) {
+                                // Show results stats
+                                const matchPercentage = data.match_percentage;
+                                resultsStats.innerHTML = `
+                                    <div class="results-stats">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                            <div><strong>Found:</strong> ${data.count} matching record(s)</div>
+                                            <div><strong>Total drug occurrences:</strong> ${data.total_drug_count}</div>
+                                        </div>
+                                        <div>
+                                            <div><strong>Match rate:</strong></div>
+                                            <div class="match-rate-bar">
+                                                <div class="match-rate-fill" style="width: ${matchPercentage}%"></div>
+                                            </div>
+                                            <div><strong>${matchPercentage}%</strong> of this drug's reports match your criteria</div>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Show results
+                                data.results.forEach(result => {
+                                    const resultCard = createResultCard(result, condition, medication);
+                                    resultsContainer.appendChild(resultCard);
+                                });
+                                
+                                resultsSection.style.display = 'block';
+                            } else {
+                                showMessage(data.message || 'No matching records found for your search criteria.', 'warning');
+                                // Always show the AI option when no results are found
+                                aiOption.style.display = 'block';
+                                
+                                // Update the AI button URL using the URL from the API response
+                                const aiButton = document.querySelector('#ai-option .ai-btn');
+                                if (data.ai_model_url) {
+                                    aiButton.href = data.ai_model_url;
+                                }
+                            }
+                        } else {
+                            showMessage(data.message || 'An error occurred while searching. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchBtn.textContent = 'Search for ADRs';
+                        searchBtn.disabled = false;
+                        showMessage('Unable to connect to the server. Please check your connection and try again.', 'error');
+                    });
+            });
+            
+            // Function to create a result card
+            function createResultCard(result, searchCondition, searchMedication) {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                
+                // Header with timestamp and severity
+                const header = document.createElement('div');
+                header.style.display = 'flex';
+                header.style.justifyContent = 'space-between';
+                header.style.marginBottom = '10px';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+                header.style.paddingBottom = '10px';
+                
+                // Timestamp
+                const timestamp = document.createElement('div');
+                timestamp.textContent = `Reported: ${result.timestamp}`;
+                header.appendChild(timestamp);
+                
+                // Severity badge
+                const severity = document.createElement('div');
+                severity.className = `severity-badge severity-${result.severity.toLowerCase()}`;
+                severity.textContent = result.severity;
+                header.appendChild(severity);
+                
+                card.appendChild(header);
+                
+                // Patient ID
+                const patientId = document.createElement('div');
+                patientId.innerHTML = `<strong>Patient ID:</strong> ${result.patient_id || 'Not assigned'}`;
+                patientId.style.marginBottom = '10px';
+                patientId.style.fontSize = '1.1rem';
+                patientId.style.color = 'var(--primary-color)';
+                card.appendChild(patientId);
+                
+                // Medical condition with highlighting
+                const conditionEl = document.createElement('div');
+                conditionEl.style.marginBottom = '5px';
+                
+                const searchConditionLower = searchCondition.toLowerCase();
+                let conditionHtml = '<strong>Pre-existing Conditions:</strong> ';
+                
+                if (result.medical_condition.includes(',')) {
+                    // Multiple conditions
+                    const conditions = result.medical_condition.split(',').map(c => c.trim());
+                    conditionHtml += conditions.map(c => {
+                        if (c.toLowerCase().includes(searchConditionLower) || 
+                            searchConditionLower.includes(c.toLowerCase())) {
+                            return `<span class="highlight">${c}</span>`;
+                        }
+                        return c;
+                    }).join(', ');
+                } else {
+                    // Single condition
+                    if (result.medical_condition.toLowerCase().includes(searchConditionLower) || 
+                        searchConditionLower.includes(result.medical_condition.toLowerCase())) {
+                        conditionHtml += `<span class="highlight">${result.medical_condition}</span>`;
+                    } else {
+                        conditionHtml += result.medical_condition;
+                    }
+                }
+                
+                conditionEl.innerHTML = conditionHtml;
+                card.appendChild(conditionEl);
+                
+                // Gender
+                const gender = document.createElement('div');
+                gender.innerHTML = `<strong>Gender:</strong> ${result.gender || 'Not specified'}`;
+                gender.style.marginBottom = '5px';
+                card.appendChild(gender);
+                
+                // Allergies (cause of administration)
+                const allergies = document.createElement('div');
+                allergies.innerHTML = `<strong>Any Allergies:</strong> ${result.cause_of_administration || 'Not specified'}`;
+                allergies.style.marginBottom = '5px';
+                card.appendChild(allergies);
+                
+                // Current medication with highlighting
+                if (searchMedication) {
+                    const medicationEl = document.createElement('div');
+                    medicationEl.style.marginBottom = '5px';
+                    
+                    const searchMedicationLower = searchMedication.toLowerCase();
+                    let medicationHtml = '<strong>Current Medication:</strong> ';
+                    
+                    if (result.current_medication && result.current_medication !== 'Not specified') {
+                        if (result.current_medication.includes(',')) {
+                            // Multiple medications
+                            const medications = result.current_medication.split(',').map(m => m.trim());
+                            medicationHtml += medications.map(m => {
+                                if (m.toLowerCase().includes(searchMedicationLower) || 
+                                    searchMedicationLower.includes(m.toLowerCase())) {
+                                    return `<span class="highlight">${m}</span>`;
+                                }
+                                return m;
+                            }).join(', ');
+                        } else {
+                            // Single medication
+                            if (result.current_medication.toLowerCase().includes(searchMedicationLower) || 
+                                searchMedicationLower.includes(result.current_medication.toLowerCase())) {
+                                medicationHtml += `<span class="highlight">${result.current_medication}</span>`;
+                            } else {
+                                medicationHtml += result.current_medication;
+                            }
+                        }
+                    } else {
+                        medicationHtml += 'Not specified';
+                    }
+                    
+                    medicationEl.innerHTML = medicationHtml;
+                    card.appendChild(medicationEl);
+                } else {
+                    const medicationEl = document.createElement('div');
+                    medicationEl.innerHTML = `<strong>Current Medication:</strong> ${result.current_medication || 'Not specified'}`;
+                    medicationEl.style.marginBottom = '5px';
+                    card.appendChild(medicationEl);
+                }
+                
+                // Adverse reaction
+                const reaction = document.createElement('div');
+                reaction.innerHTML = `<strong>Additional Info:</strong> ${result.adverse_reaction || 'Not provided'}`;
+                reaction.style.marginBottom = '15px';
+                card.appendChild(reaction);
+                
+                // Action button
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.justifyContent = 'flex-end';
+                
+                const actionBtn = document.createElement('button');
+                actionBtn.textContent = 'Request Patient Update';
+                actionBtn.style.padding = '8px 15px';
+                
+                actionBtn.addEventListener('click', function() {
+                    alert(`Update request sent to patient ${result.patient_id}`);
+                });
+                
+                btnContainer.appendChild(actionBtn);
+                card.appendChild(btnContainer);
+                
+                return card;
+            }
+            
+            // Function to show messages
+            function showMessage(text, type) {
+                messageBox.textContent = text;
+                messageBox.className = type === 'error' ? 'error-message' : 
+                                      type === 'warning' ? 'warning-message' : 'success-message';
+                messageBox.style.display = 'block';
+                
+                // If no records found message, also show AI option
+                if (text.includes('No matching records found')) {
+                    aiOption.style.display = 'block';
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

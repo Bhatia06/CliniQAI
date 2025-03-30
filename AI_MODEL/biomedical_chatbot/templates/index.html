@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrugReactAI - Adverse Drug Reaction Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DrugReactAI</h1>
+            <p class="subtitle">Machine Learning Powered Adverse Drug Reaction Predictor</p>
+        </header>
+
+        <div class="app-container">
+            <div class="input-panel">
+                <h2>Patient Information</h2>
+                
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label for="currentMedications">Current Medications</label>
+                        <select id="currentMedications" name="currentMedications" multiple="multiple" required>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="drugToUse">Drug to Check</label>
+                        <select id="drugToUse" name="drugToUse" required>
+                            <option value="">Select a drug</option>
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="preexistingConditions">Pre-existing Conditions</label>
+                        <select id="preexistingConditions" name="preexistingConditions" multiple="multiple">
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" name="age" required min="1" max="100">
+                        </div>
+
+                        <div class="form-group half">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" required min="1" max="200" step="0.1">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">Predict Adverse Reactions</button>
+                </form>
+            </div>
+
+            <div id="loading" class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Analyzing drug interactions and predicting adverse reactions...</p>
+                <p class="loading-note">Our ML model is processing your data to provide accurate predictions</p>
+            </div>
+
+            <div id="result" class="result-panel"></div>
+        </div>
+
+        <footer>
+            <p>DrugReactAI is a machine learning application that predicts potential adverse drug reactions based on patient information.</p>
+            <p>This tool is for educational purposes only and should not replace professional medical advice.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 

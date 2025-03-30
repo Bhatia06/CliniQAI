@@ -1,0 +1,4 @@
+timestamp,drug_name,medical_condition,adverse_reaction,severity,confidence,cause_of_administration,gender,patient_id,current_medication
+30-03-2024 00:03,Paracetamol,Rashes,34 year old female with symptoms,Moderate,0,Diabetes,Female,PTD_2778,Not specified
+30-03-2024 00:12,Paracetamol,Headache,30 year old male with pain,Mild,0,arthritis,Male,PTD_2779,Not specified
+30-03-2024 04:15,Dolo,Arthritis,35 year old female with joint pain,Mild,0,Pollen,Female,PTD_5466,Not specified

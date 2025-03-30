@@ -1,0 +1,3 @@
+timestamp,drug_name,medical_condition,adverse_reaction,severity,confidence,cause_of_administration,gender,patient_id,current_medication
+30-03-2025 08:40,Paracetamol,Migrane,stomach ache,Mild,0,Headache,Male,PTD_2001,n/a
+30-03-2025 08:41,aspirin,none,acid reflux,Moderate,0,headache,Female,PTD_2002,none

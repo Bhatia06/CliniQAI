@@ -1,0 +1,5 @@
+# Requirements for Patient Portal
+# Use pip install -r requirements.txt to install
+# Python 3.6+ recommended
+
+# No external dependencies required - the portal uses Python's built-in libraries 
