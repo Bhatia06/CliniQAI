@@ -222,16 +222,16 @@ echo ===  PRESS ANY KEY TO SHUTDOWN THE APPLICATION    ===
 echo =====================================================
 pause >nul
 
-timeout /t 2 /nobreak > nul
-
-start "" http://localhost:8080
-
 echo.
 echo CliniQAI has been stopped. Thank you for using our system.
 echo Performing final cleanup of any remaining processes...
 
+echo.
+
 :: Manually perform cleanup
 echo Cleaning up CliniQAI processes...
+
+timeout /t 2 /nobreak > nul
 
 :: Kill all Python processes again to ensure clean exit
 for /f "tokens=2" %%p in ('tasklist /fi "imagename eq python.exe" /fo list ^| find "PID:"') do (
