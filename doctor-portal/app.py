@@ -30,6 +30,11 @@ def preload_data_cache():
 
 def start_ai_model_server():
     try:
+        # Check if the AI model has already been started by run.bat
+        if os.environ.get('CLINIQA_AI_STARTED') == '1':
+            print("AI Model is being started by run.bat, skipping startup in doctor portal")
+            return
+            
         # Check if the AI model is already running on port 8084
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex(('127.0.0.1', AI_MODEL_PORT))
@@ -39,10 +44,12 @@ def start_ai_model_server():
             return
         sock.close()
         
-        # Start the AI model server as a background process
-        subprocess.Popen([sys.executable, AI_MODEL_PATH], 
-                         cwd=os.path.dirname(AI_MODEL_PATH),
-                         creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+        # Start the AI model - it will handle its own process management
+        subprocess.Popen(
+            [sys.executable, AI_MODEL_PATH], 
+            cwd=os.path.dirname(AI_MODEL_PATH),
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
         print(f"AI model server started on port {AI_MODEL_PORT}")
     except Exception as e:
         print(f"Error starting AI model server: {str(e)}")
@@ -251,4 +258,5 @@ if __name__ == '__main__':
     preload_data_cache()
     # Start the AI model server on application startup
     start_ai_model_server()
+    
     app.run(port=8082)

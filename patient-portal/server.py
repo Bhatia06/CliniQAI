@@ -12,7 +12,7 @@ import traceback
 PORT = 8080
 DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
 CSV_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "adr_reports.csv")
-PATIENT_ID_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "patient_id_counter.txt")
+PATIENT_ID_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "patient_id_counter.txt")
 
 print(f"Starting server on port {PORT}")
 print(f"Serving files from: {DIRECTORY}")

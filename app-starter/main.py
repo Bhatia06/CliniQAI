@@ -43,6 +43,9 @@ DOCTOR_PORT = 8082
 PATIENT_PORT = 8083
 AI_MODEL_PORT = 8084
 
+# Lock file to prevent multiple AI model instances
+AI_MODEL_LOCK_FILE = os.path.join(PROJECT_ROOT, "ai_model.lock")
+
 # Process objects to keep track of the subprocesses
 doctor_process = None
 patient_process = None
@@ -156,100 +159,177 @@ def start_ai_model():
     """Start the AI model Flask app"""
     global ai_model_process
     
-    if not check_port_available(AI_MODEL_PORT):
-        logger.warning(f"AI Model already running on port {AI_MODEL_PORT}")
+    # Check if the AI model is being started by run.bat
+    if os.environ.get('CLINIQA_AI_STARTED') == '1':
+        logger.info("AI Model is being started by run.bat, skipping startup in app-starter")
         return True
+    
+    # First, ensure no AI Model instances are running
+    logger.info("Checking for existing AI Model instances...")
+    
+    # Check for lock file
+    if os.path.exists(AI_MODEL_LOCK_FILE):
+        try:
+            with open(AI_MODEL_LOCK_FILE, 'r') as f:
+                pid = f.read().strip()
+                logger.info(f"Found AI Model lock file with PID: {pid}")
+                
+                # Check if process with this PID exists
+                try:
+                    if os.name == 'nt':  # Windows
+                        check_cmd = f"tasklist /FI \"PID eq {pid}\" /FO CSV"
+                        result = subprocess.run(check_cmd, shell=True, capture_output=True, text=True)
+                        if f'"{pid}"' in result.stdout:
+                            logger.info(f"Found existing AI Model process with PID {pid}")
+                            # Try to reuse the existing process
+                            if not check_port_available(AI_MODEL_PORT):
+                                logger.info("AI Model port is already in use, reusing existing instance")
+                                return True
+                    else:
+                        # Unix
+                        try:
+                            os.kill(int(pid), 0)  # Send signal 0 to check if process exists
+                            logger.info(f"Found existing AI Model process with PID {pid}")
+                            # Try to reuse the existing process
+                            if not check_port_available(AI_MODEL_PORT):
+                                logger.info("AI Model port is already in use, reusing existing instance")
+                                return True
+                        except ProcessLookupError:
+                            logger.info(f"No process with PID {pid} exists")
+                except Exception as e:
+                    logger.error(f"Error checking process existence: {str(e)}")
+        except Exception as e:
+            logger.error(f"Error reading AI Model lock file: {str(e)}")
+    
+    try:
+        # Kill any existing instances of the AI Model
+        if os.name == 'nt':  # Windows
+            # Find and kill all Python processes with biomedical_chatbot in the command line
+            cmd = 'wmic process where "name=\'python.exe\' and commandline like \'%biomedical_chatbot%\'" get processid /format:csv'
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            # Extract PIDs from the output
+            killed_count = 0
+            if result.stdout:
+                for line in result.stdout.splitlines():
+                    if 'ProcessId' not in line and line.strip():
+                        try:
+                            pid = line.strip().split(',')[-1]
+                            if pid:
+                                logger.info(f"Killing existing AI Model process (PID: {pid})")
+                                subprocess.run(f"taskkill /F /PID {pid}", shell=True)
+                                killed_count += 1
+                        except Exception as e:
+                            logger.error(f"Error parsing or killing AI Model process: {str(e)}")
+            
+            if killed_count > 0:
+                logger.info(f"Killed {killed_count} existing AI Model instances")
+                # Give processes time to fully terminate
+                time.sleep(2)
+        else:
+            # Unix approach
+            cmd = "ps aux | grep biomedical_chatbot | grep -v grep | awk '{print $2}'"
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            # Extract PIDs from the output
+            killed_count = 0
+            if result.stdout:
+                for pid in result.stdout.splitlines():
+                    if pid.strip():
+                        logger.info(f"Killing existing AI Model process (PID: {pid})")
+                        try:
+                            os.kill(int(pid), signal.SIGKILL)
+                            killed_count += 1
+                        except Exception as e:
+                            logger.error(f"Error killing AI Model process {pid}: {str(e)}")
+            
+            if killed_count > 0:
+                logger.info(f"Killed {killed_count} existing AI Model instances")
+                # Give processes time to fully terminate
+                time.sleep(2)
+    except Exception as e:
+        logger.error(f"Error checking for existing AI Model instances: {str(e)}")
+    
+    # Also check if the port is in use
+    if not check_port_available(AI_MODEL_PORT):
+        logger.warning(f"AI Model port {AI_MODEL_PORT} is still in use, attempting to kill the process...")
+        try:
+            # Try to find and kill the process using the port
+            if os.name == 'nt':  # Windows
+                result = subprocess.run(
+                    f'for /f "tokens=5" %p in (\'netstat -ano ^| find ":{AI_MODEL_PORT}" ^| find "LISTENING"\') do taskkill /F /PID %p',
+                    shell=True, capture_output=True, text=True
+                )
+                logger.info(f"Killed existing AI Model process using port {AI_MODEL_PORT}: {result.stdout}")
+            else:
+                result = subprocess.run(
+                    f"lsof -i :{AI_MODEL_PORT} | grep LISTEN | awk '{{print $2}}' | xargs kill -9",
+                    shell=True, capture_output=True, text=True
+                )
+                logger.info(f"Killed existing AI Model process using port {AI_MODEL_PORT}: {result.stdout}")
+            
+            # Give it a moment to terminate
+            time.sleep(2)
+        except Exception as e:
+            logger.error(f"Error killing existing AI Model process: {str(e)}")
         
     try:
-        # Use the direct start script path instead
+        # Start the AI model directly
         ai_model_dir = os.path.join(PROJECT_ROOT, "AI_MODEL", "biomedical_chatbot")
-        direct_start_path = os.path.join(ai_model_dir, "direct_start.py")
+        app_path = os.path.join(ai_model_dir, "app.py")
         
         logger.debug(f"AI Model directory: {ai_model_dir}")
-        logger.debug(f"Direct start script: {direct_start_path}")
+        logger.debug(f"AI Model app path: {app_path}")
         
         # Verify the directory exists
         if not os.path.exists(ai_model_dir):
             logger.error(f"AI Model directory {ai_model_dir} does not exist")
             return False
-        
-        # Create the direct_start.py file if it doesn't exist yet
-        if not os.path.exists(direct_start_path):
-            logger.info("Creating direct start script...")
-            with open(direct_start_path, 'w') as f:
-                f.write('''import subprocess
-import sys
-import os
-import time
-from pathlib import Path
-
-# Get the directory containing this script
-SCRIPT_DIR = Path(__file__).parent.absolute()
-print(f"Script directory: {SCRIPT_DIR}")
-
-# Ensure necessary packages are installed
-print("Installing required packages...")
-subprocess.run([
-    sys.executable, "-m", "pip", "install", 
-    "flask", "flask-cors", "joblib", "numpy", "pandas", "scikit-learn"
-], check=True)
-
-# Set the working directory to the script directory to ensure relative paths work
-os.chdir(SCRIPT_DIR)
-print(f"Changed working directory to: {os.getcwd()}")
-
-# Run the app.py file
-print("Starting AI chatbot...")
-subprocess.run([sys.executable, "app.py"])
-''')
-            logger.info("Direct start script created successfully")
             
-        # List the contents of the biomedical_chatbot directory for debugging
-        logger.debug("Contents of AI Model directory:")
-        try:
-            for item in os.listdir(ai_model_dir):
-                logger.debug(f"  - {item}")
-        except Exception as e:
-            logger.error(f"Error listing directory: {str(e)}")
-            
-        try:
-            logger.info(f"Attempting to start AI Model using Python: {sys.executable}")
-            
-            # Start the direct_start.py script
-            if os.name == 'nt':  # Windows
-                # On Windows, use 'start' command to open in a new window
-                ai_model_process = subprocess.Popen(
-                    f'start cmd /c "cd {ai_model_dir} && {sys.executable} direct_start.py"',
-                    shell=True
-                )
-            else:  # Linux/Mac
-                # Use gnome-terminal or open a new terminal window
-                try:
-                    ai_model_process = subprocess.Popen(
-                        ["gnome-terminal", "--", sys.executable, direct_start_path],
-                        cwd=ai_model_dir
-                    )
-                except FileNotFoundError:
-                    # Fallback to regular subprocess if gnome-terminal is not available
-                    ai_model_process = subprocess.Popen(
-                        [sys.executable, direct_start_path],
-                        cwd=ai_model_dir
-                    )
-            
-            # Give it a moment to start
-            time.sleep(2)
-            
-            logger.info(f"Started AI Model launcher")
-            logger.info(f"AI Model should be accessible at http://localhost:{AI_MODEL_PORT}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error starting AI Model: {str(e)}")
-            import traceback
-            logger.error(traceback.format_exc())
+        if not os.path.exists(app_path):
+            logger.error(f"AI Model app file not found at: {app_path}")
             return False
+        
+        # Start the AI model directly as a subprocess
+        logger.info(f"Starting AI Model using Python: {sys.executable}")
+        
+        ai_model_process = subprocess.Popen(
+            [sys.executable, app_path],
+            cwd=ai_model_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Give it a moment to start
+        time.sleep(2)
+        
+        logger.info(f"Started AI Model (PID: {ai_model_process.pid})")
+        logger.info(f"AI Model should be accessible at http://localhost:{AI_MODEL_PORT}")
+        
+        # Start output reader for the AI model
+        ai_output_queue = queue.Queue()
+        ai_thread = threading.Thread(
+            target=read_process_output, 
+            args=(ai_model_process, ai_output_queue, "AI Model")
+        )
+        ai_thread.daemon = True
+        ai_thread.start()
+        
+        # Create the lock file with the PID
+        try:
+            with open(AI_MODEL_LOCK_FILE, 'w') as f:
+                f.write(str(ai_model_process.pid))
+            logger.info(f"Created AI Model lock file with PID: {ai_model_process.pid}")
+        except Exception as e:
+            logger.error(f"Error creating AI Model lock file: {str(e)}")
+        
+        return True
+            
     except Exception as e:
-        logger.error(f"Error in AI Model startup: {str(e)}")
+        logger.error(f"Error starting AI Model: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         return False
 
 def start_portals():
@@ -353,28 +433,103 @@ def cleanup_processes():
     """Terminate the subprocesses when the main app exits"""
     logger.info("Cleaning up processes...")
     
-    if doctor_process:
-        logger.info(f"Stopping Doctor Portal (PID: {doctor_process.pid})")
-        try:
-            doctor_process.terminate()
-        except Exception as e:
-            logger.error(f"Error terminating Doctor Portal: {str(e)}")
+    # First, try to terminate processes gracefully
+    processes = [
+        (doctor_process, "Doctor Portal"),
+        (patient_process, "Patient Portal"),
+        (ai_model_process, "AI Model")
+    ]
     
-    if patient_process:
-        logger.info(f"Stopping Patient Portal (PID: {patient_process.pid})")
-        try:
-            patient_process.terminate()
-        except Exception as e:
-            logger.error(f"Error terminating Patient Portal: {str(e)}")
-        
-    if ai_model_process:
-        logger.info(f"Stopping AI Model (PID: {ai_model_process.pid})")
-        try:
-            ai_model_process.terminate()
-        except Exception as e:
-            logger.error(f"Error terminating AI Model: {str(e)}")
+    for process, name in processes:
+        if process:
+            logger.info(f"Stopping {name} (PID: {process.pid})")
+            try:
+                process.terminate()
+                # Give it some time to terminate gracefully
+                try:
+                    process.wait(timeout=3)
+                except subprocess.TimeoutExpired:
+                    logger.warning(f"{name} did not terminate gracefully, forcing kill...")
+                    process.kill()
+            except Exception as e:
+                logger.error(f"Error terminating {name}: {str(e)}")
+                try:
+                    # Force kill if terminate doesn't work
+                    process.kill()
+                except:
+                    pass
     
-    logger.info("Cleanup completed")
+    # Special handling for AI Model - find and kill ALL instances that might be running
+    # This is necessary because the AI Model might spawn additional processes
+    logger.info("Performing specialized AI Model cleanup...")
+    try:
+        if os.name == 'nt':  # Windows
+            # Use more direct approach to find and kill ALL AI Model processes
+            cmd = 'wmic process where "name=\'python.exe\' and commandline like \'%biomedical_chatbot%\'" get processid /format:csv'
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            # Extract PIDs from the output
+            if result.stdout:
+                for line in result.stdout.splitlines():
+                    if 'ProcessId' not in line and line.strip():
+                        try:
+                            pid = line.strip().split(',')[-1]
+                            if pid:
+                                logger.info(f"Killing additional AI Model process (PID: {pid})")
+                                subprocess.run(f"taskkill /F /PID {pid}", shell=True)
+                        except Exception as e:
+                            logger.error(f"Error parsing or killing AI Model process: {str(e)}")
+        else:
+            # Unix approach
+            cmd = "ps aux | grep biomedical_chatbot | grep -v grep | awk '{print $2}'"
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            
+            # Extract PIDs from the output
+            if result.stdout:
+                for pid in result.stdout.splitlines():
+                    if pid.strip():
+                        logger.info(f"Killing additional AI Model process (PID: {pid})")
+                        try:
+                            os.kill(int(pid), signal.SIGKILL)
+                        except Exception as e:
+                            logger.error(f"Error killing AI Model process {pid}: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error in specialized AI Model cleanup: {str(e)}")
+    
+    # Check for any remaining processes on the ports we're using
+    try:
+        for port in [MAIN_PORT, DOCTOR_PORT, PATIENT_PORT, AI_MODEL_PORT]:
+            if os.name == 'nt':  # Windows
+                cmd = f'for /f "tokens=5" %a in (\'netstat -ano ^| find ":{port}" ^| find "LISTENING"\') do taskkill /F /PID %a'
+                subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            else:
+                cmd = f"lsof -i :{port} | grep LISTEN | awk '{{print $2}}' | xargs kill -9"
+                subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+        logger.error(f"Error killing remaining processes: {str(e)}")
+    
+    # Check for Python processes related to this app
+    try:
+        if os.name == 'nt':  # Windows
+            # Kill any remaining Python processes related to the app
+            cmd = 'for /f "tokens=2" %p in (\'tasklist /fi "imagename eq python.exe" /fo list ^| find "PID:"\') do (' + \
+                  'wmic process where "ProcessID=%p" get CommandLine | find "app-starter\\main.py" > nul && taskkill /F /PID %p & ' + \
+                  'wmic process where "ProcessID=%p" get CommandLine | find "AI_MODEL\\biomedical_chatbot" > nul && taskkill /F /PID %p & ' + \
+                  'wmic process where "ProcessID=%p" get CommandLine | find "doctor-portal\\app.py" > nul && taskkill /F /PID %p & ' + \
+                  'wmic process where "ProcessID=%p" get CommandLine | find "patient-portal\\app.py" > nul && taskkill /F /PID %p)'
+            subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+        logger.error(f"Error in final process cleanup: {str(e)}")
+    
+    # Remove the AI Model lock file
+    try:
+        if os.path.exists(AI_MODEL_LOCK_FILE):
+            os.remove(AI_MODEL_LOCK_FILE)
+            logger.info("Removed AI Model lock file")
+    except Exception as e:
+        logger.error(f"Error removing AI Model lock file: {str(e)}")
+    
+    logger.info("All processes have been cleaned up")
 
 def signal_handler(sig, frame):
     """Handle Ctrl+C and other termination signals"""

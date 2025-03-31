@@ -7,6 +7,21 @@ import numpy as np
 from pathlib import Path
 import sys
 
+# Import the process manager
+try:
+    from process_manager import initialize
+    
+    # Initialize the process manager
+    # If another instance is already running, this will exit
+    if not initialize():
+        print("Another instance of the AI Model is already running. Exiting.")
+        sys.exit(0)
+        
+    print("Process manager initialized successfully")
+except Exception as e:
+    print(f"Error initializing process manager: {e}")
+    print(traceback.format_exc())
+
 # Print Python and current directory information
 print(f"Python version: {sys.version}")
 print(f"Current directory: {os.getcwd()}")
@@ -184,5 +199,5 @@ def get_conditions():
     })
 
 if __name__ == '__main__':
-    # Start the Flask development server
-    app.run(debug=True, port=8084, host='0.0.0.0') 
+    # Start the Flask server without debug mode to prevent auto-restart
+    app.run(debug=False, port=8084, host='0.0.0.0') 
