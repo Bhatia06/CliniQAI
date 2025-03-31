@@ -4,20 +4,36 @@ import os
 import traceback
 import joblib
 import numpy as np
-from synthetic_data import (
-    generate_synthetic_data,
-    generate_feature_vector,
-    generate_adverse_reactions,
-    ALL_MEDICATIONS,
-    ALL_CONDITIONS
-)
+from pathlib import Path
+import sys
+
+# Print Python and current directory information
+print(f"Python version: {sys.version}")
+print(f"Current directory: {os.getcwd()}")
+
+try:
+    from synthetic_data import (
+        generate_synthetic_data,
+        generate_feature_vector,
+        generate_adverse_reactions,
+        ALL_MEDICATIONS,
+        ALL_CONDITIONS
+    )
+    print("Successfully imported synthetic_data module")
+except Exception as e:
+    print(f"Error importing synthetic_data: {e}")
+    print(traceback.format_exc())
+    sys.exit(1)
 
 app = Flask(__name__)
 CORS(app)
 
-# Try to load the model directly from joblib file
-MODEL_PATH = 'drug_interaction_model.joblib'
+# Use an absolute path for the model file
+CURRENT_DIR = Path(__file__).parent.absolute()
+MODEL_PATH = CURRENT_DIR / 'drug_interaction_model.joblib'
 model_data = None
+
+print(f"Looking for model at: {MODEL_PATH}")
 
 try:
     if os.path.exists(MODEL_PATH):
@@ -28,6 +44,7 @@ try:
         print(f"Model file {MODEL_PATH} not found. Using rule-based predictions only.")
 except Exception as e:
     print(f"Error loading model: {e}")
+    print(traceback.format_exc())
     print("Will use rule-based predictions only.")
 
 @app.route('/')

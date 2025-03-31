@@ -24,15 +24,13 @@ CliniQAI/
 │   ├── app.py                # Flask application for patient portal
 │   ├── server.py             # Data handling server
 │   ├── templates/            # HTML templates
-│   ├── data/                 # Local data storage
-│   └── requirements.txt      # Dependencies
+│   └── data/                 # Directory for patient ID counter
+│      └── patient_id_counter.txt  # Counter for patient IDs
 │
 ├── doctor-portal/            # Doctor-facing web application
 │   ├── app.py                # Flask application for doctor portal
 │   ├── data_server.py        # Data processing server
-│   ├── templates/            # HTML templates
-│   ├── data/                 # Local data storage
-│   └── requirements.txt      # Dependencies
+│   └── templates/            # HTML templates
 │
 ├── AI_MODEL/                 # AI-powered analysis tools
 │   └── biomedical_chatbot/   # Drug interaction analysis model
@@ -43,8 +41,7 @@ CliniQAI/
 │       ├── start.bat         # Windows startup script
 │       └── start.sh          # Linux/Mac startup script
 │
-├── adr_reports.csv           # Central database for all ADR reports
-└── patient_id_counter.txt    # Counter for generating unique patient IDs
+└── adr_reports.csv           # Central database for all ADR reports
 ```
 
 ## System Requirements
@@ -151,6 +148,7 @@ The Doctor Portal allows healthcare professionals to:
 - View patient-reported adverse reactions
 - Analyze patterns and correlations
 - Access the AI model for prediction when no matches are found
+- Add new drug reports with comprehensive information
 
 To analyze data:
 1. Access the doctor portal at http://localhost:8082
@@ -170,12 +168,9 @@ To use the AI model:
 2. Enter information about the patient, current medications, and drug to analyze
 3. Receive detailed analysis of potential adverse reactions
 
-## Data Flow
+## Data Management
 
-1. Patients submit ADR reports through the Patient Portal
-2. Reports are stored in the central `adr_reports.csv` file
-3. The Doctor Portal reads from this file to provide analysis
-4. When historical data is insufficient, the AI model provides predictions
+The system uses a centralized `adr_reports.csv` file to store all adverse drug reaction reports. This file is accessed and updated by both the patient and doctor portals, ensuring all components have access to the same data.
 
 ## Troubleshooting
 

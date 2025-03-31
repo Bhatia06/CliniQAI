@@ -1,4 +1,18 @@
 timestamp,drug_name,medical_condition,adverse_reaction,severity,confidence,cause_of_administration,gender,patient_id,current_medication
-30-03-2024 00:03,Paracetamol,Rashes,34 year old female with symptoms,Moderate,0,Diabetes,Female,PTD_2778,Not specified
-30-03-2024 00:12,Paracetamol,Headache,30 year old male with pain,Mild,0,arthritis,Male,PTD_2779,Not specified
+30-03-2025 11:14,Calpol,Diabetes,Dizziness,Mild,0,Fever,Other,PTD_2003,Cetirizine
+30-03-2025 08:41,Aspirin,none,acid reflux,Moderate,0,headache,Female,PTD_2002,none
+30-03-2025 08:40,Paracetamol,Migrane,stomach ache,Mild,0,Headache,Male,PTD_2001,n/a
 30-03-2024 04:15,Dolo,Arthritis,35 year old female with joint pain,Mild,0,Pollen,Female,PTD_5466,Not specified
+30-03-2024 00:12,Paracetamol,Headache,30 year old male with pain,Mild,0,arthritis,Male,PTD_2779,Not specified
+30-03-2024 00:03,Paracetamol,Rashes,34 year old female with symptoms,Moderate,0,Diabetes,Female,PTD_2778,Not specified
+2023-01-10 19:00:00,Levothyroxine,Hypothyroidism,Anxiety,Mild,0.3,Oral,Male,12354,None
+2023-01-09 18:00:00,Warfarin,Blood Clots,Bleeding,Severe,0.9,Oral,Female,12353,None
+2023-01-08 17:00:00,Omeprazole,GERD,Headache,Moderate,0.5,Oral,Male,12352,None
+2023-01-07 16:00:00,Simvastatin,Cholesterol,Muscle Pain,Mild,0.4,Oral,Female,12351,Atorvastatin
+2023-01-06 15:00:00,Lisinopril,Hypertension,Cough,Moderate,0.6,Oral,Male,12350,None
+2023-01-05 14:00:00,Metformin,Diabetes,Nausea,Mild,0.5,Oral,Female,12349,Insulin
+2023-01-04 13:00:00,Amoxicillin,Infection,Diarrhea,Moderate,0.7,Oral,Male,12348,Penicillin
+2023-01-03 12:00:00,Paracetamol,Flu,Rash,Severe,0.9,Oral,Female,12347,None
+2023-01-02 11:00:00,Ibuprofen,Back Pain,Dizziness,Mild,0.6,Oral,Male,12346,Aspirin
+2023-01-01 10:00:00,Aspirin,Headache,Nausea,Moderate,0.8,Oral,Female,12345,Ibuprofen
+30-03-2025 11:39,Zantac,Tumor,Cold and Cough,Severe,0,Ulcers,Female,PTD_2004,Paracetamol
