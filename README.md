@@ -260,7 +260,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     <a href="https://github.com/yuv294">@yuv294</a> • 
     <a href="https://github.com/sathwikhbhat">@sathwikhbhat</a> • 
     <a href="https://github.com/Bhatia06">@Bhatia06</a> • 
-    Aditya Akkanavar
+    <a href="https://github.com/adigocrazy">@AdiGoCrazy</a>
   </p>
   <p align="center">
     <sub>© 2025 CliniQAI. All rights reserved.</sub>
