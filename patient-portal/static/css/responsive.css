@@ -1,0 +1,144 @@
+/* Responsive styles */
+@media (max-width: 992px) {
+    .container {
+        padding: 20px;
+    }
+    
+    .logo-section h1 {
+        font-size: 2rem;
+    }
+    
+    .animation-container {
+        width: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .animation-container {
+        display: none;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .reports-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filter-controls {
+        width: 100%;
+    }
+    
+    #report-search, #report-filter {
+        width: 100%;
+    }
+    
+    /* Make table responsive on larger phones/small tablets */
+    #reports-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    .logo-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo-section h1::after {
+        height: 2px;
+    }
+    
+    .tagline {
+        font-size: 0.9rem;
+    }
+    
+    button {
+        width: 100%;
+    }
+    
+    /* Make table responsive on small screens */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+    }
+    
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    td:last-child {
+        border-bottom: none;
+    }
+    
+    td:before {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: 600;
+        text-align: left;
+    }
+    
+    /* Add labels to each cell */
+    td:nth-of-type(1):before { content: "Date"; }
+    td:nth-of-type(2):before { content: "Patient ID"; }
+    td:nth-of-type(3):before { content: "Drug"; }
+    td:nth-of-type(4):before { content: "Condition"; }
+    td:nth-of-type(5):before { content: "Reason"; }
+    td:nth-of-type(6):before { content: "Reaction"; }
+    td:nth-of-type(7):before { content: "Severity"; }
+    td:nth-of-type(8):before { content: "Gender"; }
+    
+    /* Fix severity badge alignment */
+    .severity-badge {
+        display: inline-block;
+        text-align: center;
+    }
+} 
