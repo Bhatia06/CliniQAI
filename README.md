@@ -238,7 +238,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👏 Acknowledgments
 
-- **Cursor AI**: This project was developed with the assistance of [Cursor AI](https://cursor.com/), which provided code suggestions, refactoring help, and documentation guidance. We acknowledge and appreciate this AI assistance in our development process.
+**Cursor AI**: This project was developed with the assistance of [Cursor AI](https://cursor.com/), which provided code suggestions, refactoring help, documentation guidance and sometimes the entire code itself!!. We acknowledge and appreciate this AI assistance in our development process.
 
 ---
 
