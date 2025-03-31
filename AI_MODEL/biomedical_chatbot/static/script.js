@@ -1,3 +1,18 @@
+/**
+ * CliniQAI - Adverse Drug Reaction Predictor
+ * Main JavaScript functionality for the AI model component
+ * 
+ * This script handles:
+ * 1. Dropdown implementation with search functionality
+ * 2. Form validation and submission
+ * 3. API integration for fetching medications and conditions
+ * 4. Display of analysis results with severity categorization
+ * 
+ * The dropdown implementation uses a single input field that doubles
+ * as both the dropdown trigger and search input, providing a clean
+ * and intuitive user experience.
+ */
+
 document.addEventListener('DOMContentLoaded', function() {
     // Main DOM elements
     const form = document.getElementById('patientForm');

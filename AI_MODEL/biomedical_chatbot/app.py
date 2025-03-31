@@ -49,10 +49,21 @@ except Exception as e:
 
 @app.route('/')
 def home():
+    """Render the main application page"""
     return render_template('index.html')
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_medications():
+    """
+    Analyze potential adverse drug reactions
+    
+    Takes patient data including current medications, drug to check,
+    pre-existing conditions, age, and weight to predict potential
+    adverse reactions.
+    
+    Returns:
+        JSON with analysis results or error message
+    """
     try:
         data = request.get_json()
         
@@ -64,10 +75,10 @@ def analyze_medications():
         # Extract and validate age
         try:
             age = int(data.get('age', 0))
-            if age < 1 or age > 100:
+            if age < 1 or age > 120:
                 return jsonify({
                     'success': False,
-                    'error': 'Age must be between 1 and 100 years'
+                    'error': 'Age must be between 1 and 120 years'
                 }), 400
         except (ValueError, TypeError):
             return jsonify({
@@ -78,10 +89,10 @@ def analyze_medications():
         # Extract and validate weight
         try:
             weight = float(data.get('weight', 0.0))
-            if weight < 1 or weight > 200:
+            if weight < 1 or weight > 300:
                 return jsonify({
                     'success': False,
-                    'error': 'Weight must be between 1 and 200 kg'
+                    'error': 'Weight must be between 1 and 300 kg'
                 }), 400
         except (ValueError, TypeError):
             return jsonify({
@@ -112,7 +123,19 @@ def analyze_medications():
         }), 400
 
 def rule_based_prediction(current_medications, drug_to_use, preexisting_conditions, age, weight):
-    """Use rule-based approach to predict adverse reactions"""
+    """
+    Use rule-based approach to predict adverse reactions
+    
+    Args:
+        current_medications: List of medications the patient is currently taking
+        drug_to_use: Drug being checked for potential adverse reactions
+        preexisting_conditions: List of patient's pre-existing medical conditions
+        age: Patient's age in years
+        weight: Patient's weight in kilograms
+        
+    Returns:
+        Dictionary with adverse reactions and patient information
+    """
     adverse_reactions = generate_adverse_reactions(
         current_medications, 
         drug_to_use, 
@@ -136,7 +159,12 @@ def rule_based_prediction(current_medications, drug_to_use, preexisting_conditio
 
 @app.route('/api/medications', methods=['GET'])
 def get_medications():
-    """API endpoint to get list of available medications"""
+    """
+    API endpoint to get list of available medications
+    
+    Returns:
+        JSON with list of medication names
+    """
     return jsonify({
         'success': True,
         'medications': sorted(ALL_MEDICATIONS)
@@ -144,11 +172,17 @@ def get_medications():
 
 @app.route('/api/conditions', methods=['GET'])
 def get_conditions():
-    """API endpoint to get list of available conditions"""
+    """
+    API endpoint to get list of available medical conditions
+    
+    Returns:
+        JSON with list of condition names
+    """
     return jsonify({
         'success': True,
         'conditions': sorted(ALL_CONDITIONS)
     })
 
 if __name__ == '__main__':
+    # Start the Flask development server
     app.run(debug=True, port=8084, host='0.0.0.0') 

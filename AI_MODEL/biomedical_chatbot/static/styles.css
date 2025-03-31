@@ -1,26 +1,43 @@
+/*
+ * CliniQAI - Adverse Drug Reaction Predictor
+ * Custom CSS for the AI model component
+ *
+ * This stylesheet provides the styling for the AI model interface, including:
+ * - Color scheme based on primary color rgb(7, 14, 44)
+ * - Form styling for patient information
+ * - Custom dropdown implementation
+ * - Results display with severity-based coloring
+ * - Responsive design for various screen sizes
+ */
+
 /* Base variables */
 :root {
-    --primary-color: #0656fa;
-    --secondary-color: #61c7fa;
-    --accent-color: #2a74d5;
-    --dark-bg: #121630;
-    --darker-bg: #07091c;
-    --light-text: #ecf0ff;
-    --card-bg: #172049;
-    --input-bg: rgb(7, 14, 44);
-    --border-color: rgba(255, 255, 255, 0.1);
-    --success-color: #00e676;
-    --error-color: #ff3d71;
-    --warning-color: #ffab00;
+    /* Primary Colors */
+    --primary-color: rgb(7, 14, 44);
+    --primary-light: rgba(7, 14, 44, 0.8);
+    --primary-dark: rgb(5, 10, 30);
     
-    --high: var(--error-color);
-    --medium: var(--warning-color);
-    --low: var(--success-color);
+    /* Accent Colors */
+    --accent-color: rgb(97, 199, 250);
+    --accent-light: rgb(137, 207, 240);
     
-    --border-radius: 12px;
-    --input-radius: 8px;
-    --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    --transition: all 0.2s ease;
+    /* Background and Text Colors */
+    --bg-color: rgb(15, 23, 42);
+    --card-bg: rgb(30, 41, 59);
+    --input-bg: rgb(51, 65, 85);
+    --light-text: rgb(248, 250, 252);
+    --muted-text: rgb(148, 163, 184);
+    
+    /* Status Colors */
+    --success-color: rgb(34, 197, 94);
+    --warning-color: rgb(234, 179, 8);
+    --danger-color: rgb(239, 68, 68);
+    
+    /* UI Elements */
+    --border-color: rgb(71, 85, 105);
+    --input-radius: 6px;
+    --card-radius: 12px;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Reset and base styles */

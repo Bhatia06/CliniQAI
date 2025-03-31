@@ -1,23 +1,24 @@
-flask
-werkzeug
-requests
-python-dotenv
-flask-cors
-click
-itsdangerous
-Jinja2
-MarkupSafe
-scikit-learn
-numpy
-pandas
-joblib
-typing-extensions
-matplotlib
-seaborn
-tqdm
-pytz
-six
-threadpoolctl
-scipy
-setuptools>=65.5.1
-wheel>=0.38.0 
+# Web Framework
+flask==2.0.1
+flask-cors==3.0.10
+Werkzeug==2.0.1
+Jinja2==3.0.1
+MarkupSafe==2.0.1
+itsdangerous==2.0.1
+click==8.0.1
+
+# Machine Learning
+numpy==1.23.3
+pandas==1.5.0
+scikit-learn==1.1.2
+joblib==1.1.0
+typing-extensions==4.3.0
+
+# Utilities
+python-dotenv==0.19.2
+requests==2.27.1
+matplotlib==3.5.2
+tqdm==4.64.0
+pytz==2022.1
+six==1.16.0
+threadpoolctl==3.1.0 
