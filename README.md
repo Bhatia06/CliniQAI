@@ -8,7 +8,7 @@
 </div>
 
 <div align="center">
-  <p><strong>An intelligent healthcare system for reporting, analyzing, and predicting adverse drug reactions</strong></p>
+  <p><strong>An Intelligent Healthcare System for reporting, analyzing and predicting Adverse Drug Reactions</strong></p>
 </div>
 
 ## 🌟 Overview
@@ -89,8 +89,32 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
    cd CliniQAI
    ```
 
-2. **Create and activate a virtual environment (recommended)**
+2. **Easy Setup (Recommended)**
+   
+   We've included convenient startup scripts for both Windows and macOS/Linux:
+
+   **Windows users:**
+   ```
+   run.bat
+   ```
+
+   **macOS/Linux users:**
+   ```
+   chmod +x run.sh
+   ./run.sh
+   ```
+
+   These scripts will automatically:
+   - Create a virtual environment
+   - Install all required dependencies
+   - Start the application components
+
+3. **Manual Setup (Alternative)**
+
+   If you prefer to set up manually:
+
    ```bash
+   # Create and activate a virtual environment
    # Windows
    python -m venv venv
    venv\Scripts\activate
@@ -98,20 +122,16 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
    # macOS/Linux
    python3 -m venv venv
    source venv/bin/activate
-   ```
 
-3. **Install dependencies**
-   ```bash
+   # Install dependencies
    pip install -r requirements.txt
-   ```
 
-4. **Run the application**
-   ```bash
+   # Start the application
    cd app-starter
    python main.py
    ```
 
-5. **Access the application**
+4. **Access the application**
    - Main Dashboard: http://localhost:8080
    - Doctor Portal: http://localhost:8082
    - Patient Portal: http://localhost:8083
@@ -228,9 +248,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 👏 Acknowledgments
+
+- **Cursor AI**: This project was developed with the assistance of [Cursor AI](https://cursor.com/), which provided code suggestions, refactoring help, and documentation guidance. We acknowledge and appreciate this AI assistance in our development process.
+
 ---
 
 <div align="center">
-  <p>Made with ❤️ for healthcare professionals and patients</p>
-  <p>© 2024 CliniQAI</p>
+  <p>Made with ❤️ by <a href="https://github.com/yuv294">@yuv294</a>, <a href="https://github.com/sathwikhbhat">@sathwikhbhat</a>, and <a href="https://github.com/Bhatia06">@Bhatia06</a></p>
+  <p>© 2025 CliniQAI</p>
 </div>
