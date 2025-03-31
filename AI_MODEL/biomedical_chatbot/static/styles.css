@@ -13,31 +13,31 @@
 /* Base variables */
 :root {
     /* Primary Colors */
-    --primary-color: rgb(7, 14, 44);
-    --primary-light: rgba(7, 14, 44, 0.8);
-    --primary-dark: rgb(5, 10, 30);
+    --primary-color: #0656fa;
+    --primary-light: #61c7fa;
+    --primary-dark: #2a74d5;
     
     /* Accent Colors */
-    --accent-color: rgb(97, 199, 250);
-    --accent-light: rgb(137, 207, 240);
+    --accent-color: #2a74d5;
+    --accent-light: #61c7fa;
     
     /* Background and Text Colors */
-    --bg-color: rgb(15, 23, 42);
-    --card-bg: rgb(30, 41, 59);
-    --input-bg: rgb(51, 65, 85);
-    --light-text: rgb(248, 250, 252);
+    --bg-color: #121630;
+    --card-bg: #172049;
+    --input-bg: #070e2c;
+    --light-text: #ecf0ff;
     --muted-text: rgb(148, 163, 184);
     
     /* Status Colors */
-    --success-color: rgb(34, 197, 94);
-    --warning-color: rgb(234, 179, 8);
-    --danger-color: rgb(239, 68, 68);
+    --success-color: #00e676;
+    --warning-color: #ffae00;
+    --danger-color: #ff3d71;
     
     /* UI Elements */
-    --border-color: rgb(71, 85, 105);
-    --input-radius: 6px;
-    --card-radius: 12px;
-    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --border-color: #1d2a5e;
+    --input-radius: 8px;
+    --card-radius: 15px;
+    --shadow: 0 10px 25px rgb(0, 0, 0);
 }
 
 /* Reset and base styles */
@@ -48,12 +48,12 @@
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Exo 2', sans-serif;
     line-height: 1.6;
     color: var(--light-text);
-    background: var(--darker-bg);
+    background: var(--bg-color);
     background-image: 
-        radial-gradient(circle at 20% 30%, rgba(6, 86, 250, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 20% 30%, rgba(6, 86, 250, 0.2) 0%, transparent 40%),
         radial-gradient(circle at 80% 70%, rgba(97, 199, 250, 0.1) 0%, transparent 40%);
     min-height: 100vh;
     padding: 20px;
@@ -88,7 +88,7 @@ h1::after {
     left: 0;
     width: 60%;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
 }
 
 .subtitle {
@@ -122,11 +122,11 @@ h1::after {
 /* Card styles */
 .card {
     background: var(--card-bg);
-    border-radius: var(--border-radius);
+    border-radius: var(--card-radius);
     padding: 30px;
     margin-bottom: 25px;
-    box-shadow: var(--box-shadow);
-    border: 1px solid #1d2a5e;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
 }
@@ -138,7 +138,7 @@ h1::after {
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
 }
 
 /* Form styles */
@@ -181,7 +181,7 @@ input[type="number"] {
     border-radius: var(--input-radius);
     background: var(--input-bg);
     color: var(--light-text);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Exo 2', sans-serif;
     font-size: 1rem;
     transition: var(--transition);
 }
@@ -207,7 +207,7 @@ input[type="number"]:focus {
     color: var(--light-text);
     position: relative;
     min-height: 45px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Exo 2', sans-serif;
     font-size: 1rem;
 }
 
@@ -334,7 +334,7 @@ input[type="number"]:focus {
 
 /* Button styles */
 .primary-button {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
     color: white;
     border: none;
     padding: 12px 22px;
@@ -343,14 +343,15 @@ input[type="number"]:focus {
     font-weight: 600;
     letter-spacing: 0.5px;
     box-shadow: 0 4px 15px rgba(6, 86, 250, 0.3);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Exo 2', sans-serif;
     font-size: 1rem;
     width: 100%;
-    transition: var(--transition);
+    transition: all 0.3s ease;
+    text-align: center;
 }
 
 .primary-button:hover {
-    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(6, 86, 250, 0.4);
 }
@@ -434,30 +435,30 @@ input[type="number"]:focus {
 }
 
 .severity-section.high {
-    border-left: 4px solid var(--high);
-    background-color: rgba(255, 86, 48, 0.1);
+    border-left: 4px solid var(--danger-color);
+    background-color: rgba(255, 86, 48, 0.25);
 }
 
 .severity-section.high h3 {
-    color: var(--high);
+    color: var(--danger-color);
 }
 
 .severity-section.medium {
-    border-left: 4px solid var(--medium);
-    background-color: rgba(255, 171, 0, 0.1);
+    border-left: 4px solid var(--warning-color);
+    background-color: rgba(255, 171, 0, 0.25);
 }
 
 .severity-section.medium h3 {
-    color: var(--medium);
+    color: var(--warning-color);
 }
 
 .severity-section.low {
-    border-left: 4px solid var(--low);
-    background-color: rgba(54, 179, 126, 0.1);
+    border-left: 4px solid var(--success-color);
+    background-color: rgba(54, 179, 126, 0.25);
 }
 
 .severity-section.low h3 {
-    color: var(--low);
+    color: var(--success-color);
 }
 
 .reactions-list {
@@ -468,8 +469,8 @@ input[type="number"]:focus {
     padding: 12px;
     margin-bottom: 10px;
     border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .reaction-item:last-child {
@@ -507,23 +508,23 @@ input[type="number"]:focus {
 }
 
 .disclaimer {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-left: 4px solid var(--secondary-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid var(--primary-light);
     padding: 15px;
     margin: 20px 0;
     border-radius: 4px;
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .error {
-    background-color: rgba(255, 86, 48, 0.1);
-    border-left: 4px solid var(--error-color);
+    background-color: rgba(255, 86, 48, 0.25);
+    border-left: 4px solid var(--danger-color);
     padding: 15px;
     margin: 20px 0;
     border-radius: 4px;
     font-size: 0.9rem;
-    color: var(--error-color);
+    color: var(--danger-color);
 }
 
 footer {
