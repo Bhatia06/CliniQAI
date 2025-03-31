@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# Set terminal color to green
+echo -e "\033[0;32m"
+clear
+
 echo "CliniQAI - Adverse Drug Reaction Management System"
 echo "=================================================="
+echo
+echo "NOTE: The first-time setup might take several minutes to install required libraries and set up the virtual environment. Please wait patiently."
 echo
 
 # Check if Python is installed

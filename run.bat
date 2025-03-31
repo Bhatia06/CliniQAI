@@ -4,6 +4,8 @@ cls
 echo CliniQAI - Adverse Drug Reaction Management System
 echo ===================================================
 echo.
+echo NOTE: The first-time setup might take several minutes to install required libraries and set up the virtual environment. Please wait patiently.
+echo.
 
 :: Check if Python is installed
 where python >nul 2>nul
