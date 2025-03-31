@@ -115,6 +115,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return Array.from(select.selectedOptions).map(option => option.value);
     }
 
+    function createReactionItem(reaction) {
+        // Handle both ML-predicted and rule-based reactions
+        const reaction_name = reaction.reaction || reaction.type;
+        const trigger = reaction.trigger || reaction.triggered_by || '';
+        const probability = reaction.probability ? `<span class="probability">${reaction.probability}</span>` : '';
+        const source = reaction.source ? `<div class="source">${reaction.source}</div>` : '';
+        const mechanism = reaction.mechanism ? `<div class="mechanism">${reaction.mechanism}</div>` : '';
+        
+        return `
+            <li class="reaction-item">
+                <div class="reaction-name">
+                    ${reaction_name}
+                    ${probability}
+                </div>
+                <div class="trigger"><strong>Trigger:</strong> ${trigger}</div>
+                ${source}
+                ${mechanism}
+            </li>
+        `;
+    }
+
     function displayResults(analysis) {
         let html = `
             <div class="analysis-header">
@@ -169,6 +190,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     </ul>
                 </div>
             `;
+        } else if (highSeverity.length === 0 && mediumSeverity.length === 0) {
+            // No reactions found
+            html += `
+                <div class="severity-section low">
+                    <h3>No Significant Risk Detected</h3>
+                    <p>Based on the provided information, no significant adverse reactions were predicted.</p>
+                </div>
+            `;
         }
         
         html += `</div>`;
@@ -183,24 +212,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
         resultDiv.innerHTML = html;
         resultDiv.style.display = 'block';
-    }
-    
-    function createReactionItem(reaction) {
-        // Handle both ML-predicted and rule-based reactions
-        const reaction_name = reaction.reaction || reaction.type;
-        const trigger = reaction.trigger || reaction.triggered_by || '';
-        const probability = reaction.probability ? `<div class="probability">Probability: ${reaction.probability}</div>` : '';
-        const source = reaction.source ? `<div class="source">${reaction.source}</div>` : '';
-        const mechanism = reaction.mechanism ? `<div class="mechanism">${reaction.mechanism}</div>` : '';
-        
-        return `
-            <li class="reaction-item">
-                <div class="reaction-name">${reaction_name}</div>
-                ${probability}
-                <div class="trigger">${trigger}</div>
-                ${source}
-                ${mechanism}
-            </li>
-        `;
     }
 }); 
