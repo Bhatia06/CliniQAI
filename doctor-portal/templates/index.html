@@ -162,15 +162,36 @@
         
         .ai-btn {
             background: linear-gradient(45deg, var(--ai-color), #4a00e0);
+            padding: 14px 24px;
             margin-top: 15px;
-            margin-bottom: 15px;
-            display: inline-block;
+            margin-bottom: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
-            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         .ai-btn:hover {
             background: linear-gradient(45deg, #4a00e0, var(--ai-color));
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(142, 45, 226, 0.6);
+        }
+        
+        .ai-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(142, 45, 226, 0.4);
+        }
+        
+        .ai-btn-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
         }
         
         .error-message { 
@@ -277,48 +298,66 @@
         
         .ai-option-container {
             text-align: center;
-            padding: 20px;
-            background: rgba(142, 45, 226, 0.1);
-            border-radius: 8px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(142, 45, 226, 0.1), rgba(74, 0, 224, 0.15));
+            border-radius: 12px;
             margin-top: 20px;
             border: 1px solid rgba(142, 45, 226, 0.3);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            color: #e6e0ff;
         }
         
-        /* Add these styles for the custom dropdown */
-        .custom-select-container {
+        .ai-option-container p {
+            color: #e6e0ff;
+            font-weight: 300;
+        }
+        
+        .ai-option-container p.subtitle {
+            margin-top: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+            color: #d7cefd;
+        }
+        
+        /* Add these styles for the dropdown */
+        .dropdown-container {
             position: relative;
             width: 100%;
         }
         
-        .custom-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-        }
-        
-        .custom-dropdown {
+        .dropdown-list {
             display: none;
             position: absolute;
             width: 100%;
             max-height: 200px;
             overflow-y: auto;
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 0 0 5px 5px;
-            z-index: 1000;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0 0 8px 8px;
+            z-index: 10;
+            margin-top: -1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .dropdown-item {
             padding: 10px 15px;
             cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .dropdown-item:hover {
-            background-color: var(--hover-color);
+            background-color: rgba(6, 86, 250, 0.1);
+        }
+        
+        .dropdown-item.create-new {
+            color: var(--primary-color);
+            font-weight: bold;
+            background-color: rgba(6, 86, 250, 0.05);
+        }
+        
+        .dropdown-item.active {
+            background-color: rgba(6, 86, 250, 0.2);
+            border-left: 3px solid var(--primary-color);
         }
         
         .create-new {
@@ -379,34 +418,39 @@
         
         <div class="card">
             <h2>Search Adverse Drug Reactions</h2>
-            <div class="form-row">
+            <div class="search-panel">
                 <div class="form-group">
-                    <label for="drug-name">Drug Name</label>
-                    <div class="custom-select-container">
-                        <input type="text" id="drug-input" class="custom-input" placeholder="Type or select drug name" autocomplete="off">
-                        <div id="drug-dropdown" class="custom-dropdown"></div>
+                    <label for="drug-input">Drug Name</label>
+                    <div class="dropdown-container">
+                        <input type="text" id="drug-input" placeholder="Enter drug name">
+                        <div id="drug-dropdown" class="dropdown-list"></div>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="condition-name">Pre-existing Conditions</label>
-                    <input type="text" id="condition-name" placeholder="Enter pre-existing conditions">
+                    <div class="dropdown-container">
+                        <input type="text" id="condition-name" placeholder="Enter medical conditions">
+                        <div id="condition-dropdown" class="dropdown-list"></div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="current-medication">Current Medication (Optional)</label>
-                <input type="text" id="current-medication" placeholder="Enter current medications">
-            </div>
-            
-            <div class="form-group">
-                <button id="search-btn" class="search-btn">Search for ADRs</button>
+                
+                <div class="form-actions">
+                    <button id="search-btn" class="primary-btn">Search for ADRs</button>
+                </div>
             </div>
             
             <div id="message-box" class="error-message"></div>
             <div id="ai-option" style="display: none;" class="ai-option-container">
                 <p>No matching records found in our database. Use our AI-powered Biomedical Chatbot for additional insights.</p>
-                <a href="http://localhost:8084/" class="ai-btn portal-btn" target="_blank">Consult AI Chatbot</a>
+                <a href="http://localhost:8084/" class="ai-btn portal-btn" target="_blank">
+                    <svg class="ai-btn-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12C21 7.03 16.97 3 12 3ZM12 19C8.13 19 5 15.87 5 12C5 8.13 8.13 5 12 5C15.87 5 19 8.13 19 12C19 15.87 15.87 19 12 19Z" fill="white"/>
+                        <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" fill="white"/>
+                    </svg>
+                    Consult AI Chatbot
+                </a>
+                <p class="subtitle">Advanced LLM trained on medical research papers and clinical data</p>
             </div>
         </div>
         
@@ -428,15 +472,16 @@
             const drugDropdown = document.getElementById('drug-dropdown');
             const searchBtn = document.getElementById('search-btn');
             const conditionInput = document.getElementById('condition-name');
-            const medicationInput = document.getElementById('current-medication');
+            const conditionDropdown = document.getElementById('condition-dropdown');
             const messageBox = document.getElementById('message-box');
             const resultsSection = document.getElementById('results-section');
             const resultsStats = document.getElementById('results-stats');
             const resultsContainer = document.getElementById('results-container');
             const aiOption = document.getElementById('ai-option');
             
-            // Drug list storage
+            // Storage for lists
             let drugList = [];
+            let conditionList = [];
             
             // Function to show message
             function showMessage(text, type) {
@@ -457,48 +502,84 @@
                 .then(data => {
                     if (data.success) {
                         drugList = data.drugs;
-                        populateDropdown();
+                        populateDropdown(drugDropdown, drugList, '');
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching drugs:', error);
                     showMessage('Unable to connect to the server. Please check your connection and try again.', 'error');
                 });
+                
+            // Fetch medical conditions for dropdown    
+            fetch(`${API_URL}/api/conditions`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        conditionList = data.conditions;
+                        populateDropdown(conditionDropdown, conditionList, '');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching conditions:', error);
+                });
             
-            // Function to populate dropdown
-            function populateDropdown(filter = '') {
-                drugDropdown.innerHTML = '';
+            // Generic function to populate dropdown
+            function populateDropdown(dropdownElement, itemsList, filter = '') {
+                dropdownElement.innerHTML = '';
                 
-                const filteredDrugs = filter ? 
-                    drugList.filter(drug => drug.toLowerCase().includes(filter.toLowerCase())) : 
-                    drugList;
+                const filteredItems = filter ? 
+                    itemsList.filter(item => item.toLowerCase().includes(filter.toLowerCase())) : 
+                    itemsList;
                 
-                if (filteredDrugs.length === 0 && filter.trim() !== '') {
+                // Only show first 10 matches to avoid overwhelming the dropdown
+                const itemsToShow = filteredItems.slice(0, 10);
+                
+                if (filteredItems.length === 0 && filter.trim() !== '') {
                     // Add option to create new entry
                     const createOption = document.createElement('div');
                     createOption.className = 'dropdown-item create-new';
                     createOption.textContent = `Add "${filter}" to list`;
                     createOption.addEventListener('click', function() {
-                        addNewDrug(filter);
+                        if (dropdownElement === drugDropdown) {
+                            addNewDrug(filter);
+                        } else {
+                            // Just set the value for conditions
+                            conditionInput.value = filter;
+                            conditionDropdown.style.display = 'none';
+                        }
                     });
-                    drugDropdown.appendChild(createOption);
+                    dropdownElement.appendChild(createOption);
                 }
                 
-                filteredDrugs.forEach(drug => {
+                itemsToShow.forEach(item => {
                     const option = document.createElement('div');
                     option.className = 'dropdown-item';
-                    option.textContent = drug;
+                    option.textContent = item;
                     option.addEventListener('click', function() {
-                        drugInput.value = drug;
-                        drugDropdown.style.display = 'none';
+                        if (dropdownElement === drugDropdown) {
+                            drugInput.value = item;
+                            drugDropdown.style.display = 'none';
+                        } else {
+                            conditionInput.value = item;
+                            conditionDropdown.style.display = 'none';
+                        }
                     });
-                    drugDropdown.appendChild(option);
+                    dropdownElement.appendChild(option);
                 });
                 
-                if (drugDropdown.children.length > 0) {
-                    drugDropdown.style.display = 'block';
+                if (itemsToShow.length > 0 || (filteredItems.length === 0 && filter.trim() !== '')) {
+                    dropdownElement.style.display = 'block';
                 } else {
-                    drugDropdown.style.display = 'none';
+                    dropdownElement.style.display = 'none';
+                }
+                
+                if (filteredItems.length > 10) {
+                    const moreItem = document.createElement('div');
+                    moreItem.className = 'dropdown-item';
+                    moreItem.style.fontStyle = 'italic';
+                    moreItem.style.textAlign = 'center';
+                    moreItem.textContent = `...${filteredItems.length - 10} more matches`;
+                    dropdownElement.appendChild(moreItem);
                 }
             }
             
@@ -615,26 +696,88 @@
             
             // Drug input event listeners
             drugInput.addEventListener('focus', function() {
-                populateDropdown(drugInput.value);
+                populateDropdown(drugDropdown, drugList, drugInput.value);
             });
             
             drugInput.addEventListener('input', function() {
-                populateDropdown(drugInput.value);
+                populateDropdown(drugDropdown, drugList, drugInput.value);
             });
             
-            drugInput.addEventListener('blur', function(e) {
-                // Delay hiding dropdown to allow for click events
-                setTimeout(() => {
-                    drugDropdown.style.display = 'none';
-                }, 200);
+            // Condition input event listeners
+            conditionInput.addEventListener('focus', function() {
+                populateDropdown(conditionDropdown, conditionList, conditionInput.value);
             });
+            
+            conditionInput.addEventListener('input', function() {
+                populateDropdown(conditionDropdown, conditionList, conditionInput.value);
+            });
+            
+            // Handle clicking outside to close dropdowns
+            document.addEventListener('click', function(event) {
+                if (!drugInput.contains(event.target) && !drugDropdown.contains(event.target)) {
+                    drugDropdown.style.display = 'none';
+                }
+                
+                if (!conditionInput.contains(event.target) && !conditionDropdown.contains(event.target)) {
+                    conditionDropdown.style.display = 'none';
+                }
+            });
+            
+            // Handle keyboard navigation for drug dropdown
+            drugInput.addEventListener('keydown', function(e) {
+                handleDropdownKeyboard(e, drugDropdown, drugInput);
+            });
+            
+            // Handle keyboard navigation for condition dropdown
+            conditionInput.addEventListener('keydown', function(e) {
+                handleDropdownKeyboard(e, conditionDropdown, conditionInput);
+            });
+            
+            // Function for keyboard navigation in dropdowns
+            function handleDropdownKeyboard(e, dropdownElement, inputElement) {
+                if (dropdownElement.style.display === 'block') {
+                    const items = dropdownElement.querySelectorAll('.dropdown-item');
+                    const activeItem = dropdownElement.querySelector('.dropdown-item.active');
+                    
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (!activeItem) {
+                            items[0].classList.add('active');
+                            items[0].scrollIntoView({ block: 'nearest' });
+                        } else {
+                            const currentIndex = Array.from(items).indexOf(activeItem);
+                            if (currentIndex < items.length - 1) {
+                                activeItem.classList.remove('active');
+                                items[currentIndex + 1].classList.add('active');
+                                items[currentIndex + 1].scrollIntoView({ block: 'nearest' });
+                            }
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (activeItem) {
+                            const currentIndex = Array.from(items).indexOf(activeItem);
+                            if (currentIndex > 0) {
+                                activeItem.classList.remove('active');
+                                items[currentIndex - 1].classList.add('active');
+                                items[currentIndex - 1].scrollIntoView({ block: 'nearest' });
+                            }
+                        }
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (activeItem) {
+                            activeItem.click();
+                        }
+                    } else if (e.key === 'Escape') {
+                        dropdownElement.style.display = 'none';
+                    }
+                }
+            }
             
             // Search button click handler
             searchBtn.addEventListener('click', function() {
                 // Get values
                 const drug = drugInput.value.trim();
                 const condition = conditionInput.value.trim();
-                const medication = medicationInput.value.trim();
                 
                 // Validate - require at least drug or condition
                 if (!drug && !condition) {
@@ -654,7 +797,7 @@
                 searchBtn.disabled = true;
                 
                 // Make API request
-                fetch(`${API_URL}/api/search?drug=${encodeURIComponent(drug)}&condition=${encodeURIComponent(condition)}&current_medication=${encodeURIComponent(medication)}`)
+                fetch(`${API_URL}/api/search?drug=${encodeURIComponent(drug)}&condition=${encodeURIComponent(condition)}`)
                     .then(response => response.json())
                     .then(data => {
                         searchBtn.textContent = 'Search for ADRs';
@@ -697,7 +840,7 @@
                                 
                                 // Show results
                                 data.results.forEach(result => {
-                                    const resultCard = createResultCard(result, condition, medication);
+                                    const resultCard = createResultCard(result, condition);
                                     resultsContainer.appendChild(resultCard);
                                 });
                                 
@@ -726,7 +869,7 @@
             });
             
             // Function to create a result card
-            function createResultCard(result, searchCondition, searchMedication) {
+            function createResultCard(result, searchCondition) {
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 
@@ -800,47 +943,6 @@
                 allergies.innerHTML = `<strong>Any Allergies:</strong> ${result.cause_of_administration || 'Not specified'}`;
                 allergies.style.marginBottom = '5px';
                 card.appendChild(allergies);
-                
-                // Current medication with highlighting
-                if (searchMedication) {
-                    const medicationEl = document.createElement('div');
-                    medicationEl.style.marginBottom = '5px';
-                    
-                    const searchMedicationLower = searchMedication.toLowerCase();
-                    let medicationHtml = '<strong>Current Medication:</strong> ';
-                    
-                    if (result.current_medication && result.current_medication !== 'Not specified') {
-                        if (result.current_medication.includes(',')) {
-                            // Multiple medications
-                            const medications = result.current_medication.split(',').map(m => m.trim());
-                            medicationHtml += medications.map(m => {
-                                if (m.toLowerCase().includes(searchMedicationLower) || 
-                                    searchMedicationLower.includes(m.toLowerCase())) {
-                                    return `<span class="highlight">${m}</span>`;
-                                }
-                                return m;
-                            }).join(', ');
-                        } else {
-                            // Single medication
-                            if (result.current_medication.toLowerCase().includes(searchMedicationLower) || 
-                                searchMedicationLower.includes(result.current_medication.toLowerCase())) {
-                                medicationHtml += `<span class="highlight">${result.current_medication}</span>`;
-                            } else {
-                                medicationHtml += result.current_medication;
-                            }
-                        }
-                    } else {
-                        medicationHtml += 'Not specified';
-                    }
-                    
-                    medicationEl.innerHTML = medicationHtml;
-                    card.appendChild(medicationEl);
-                } else {
-                    const medicationEl = document.createElement('div');
-                    medicationEl.innerHTML = `<strong>Current Medication:</strong> ${result.current_medication || 'Not specified'}`;
-                    medicationEl.style.marginBottom = '5px';
-                    card.appendChild(medicationEl);
-                }
                 
                 // Adverse reaction
                 const reaction = document.createElement('div');

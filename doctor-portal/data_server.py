@@ -138,9 +138,8 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
             query_params = parse_qs(url_parts.query)
             drug_name = query_params.get('drug', [''])[0].lower().strip()
             medical_condition = query_params.get('condition', [''])[0].lower().strip()
-            current_medication = query_params.get('current_medication', [''])[0].lower().strip()
             
-            print(f"Search request received - Drug: '{drug_name}', Condition: '{medical_condition}', Medication: '{current_medication}'")
+            print(f"Search request received - Drug: '{drug_name}', Condition: '{medical_condition}'")
             
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -176,18 +175,15 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
             print("Debug: Starting search with parameters:")
             print(f"  - Drug: '{drug_name}'")
             print(f"  - Condition: '{medical_condition}'")
-            print(f"  - Medication: '{current_medication}'")
             print(f"  - Total records to search: {len(cached_data['data'])}")
             
             for idx, row in enumerate(cached_data['data']):
                 row_drug = row.get('drug_name', '').lower().strip()
                 row_symptoms = row.get('medical_condition', '').lower().strip()
-                row_medication = row.get('current_medication', '').lower().strip()
                 
                 print(f"\nDebug - Record #{idx+1}:")
                 print(f"  Drug: '{row_drug}'")
                 print(f"  Symptoms: '{row_symptoms}'")
-                print(f"  Medication: '{row_medication}'")
                 
                 # Count total occurrences of the drug if drug name was provided
                 drug_match = True
@@ -235,18 +231,8 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
                                 print(f"MATCHED (in list): '{medical_condition_lower}' matches with '{condition}'")
                                 break
                 
-                # Check medication match if current_medication is provided
-                medication_match = True
-                if current_medication:
-                    medication_match = False
-                    if ',' in row_medication:
-                        row_medication_list = [m.strip() for m in row_medication.split(',')]
-                        medication_match = any(current_medication in m or m in current_medication for m in row_medication_list)
-                    else:
-                        medication_match = current_medication in row_medication or row_medication in current_medication
-                
                 # Add to results if all criteria match
-                if drug_match and symptoms_match and medication_match:
+                if drug_match and symptoms_match:
                     results.append({
                         'timestamp': row.get('timestamp', ''),
                         'drug_name': row.get('drug_name', ''),
@@ -276,7 +262,7 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
             }
             
             if len(results) == 0:
-                response['message'] = 'No matching records found for this drug, symptoms, and medication combination.'
+                response['message'] = 'No matching records found for this drug and symptoms combination.'
             
             self.wfile.write(json.dumps(response).encode())
             return
