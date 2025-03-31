@@ -636,9 +636,9 @@
                 const condition = conditionInput.value.trim();
                 const medication = medicationInput.value.trim();
                 
-                // Validate
-                if (!drug || !condition) {
-                    showMessage('Please enter a drug name and pre-existing conditions', 'error');
+                // Validate - require at least drug or condition
+                if (!drug && !condition) {
+                    showMessage('Please enter at least a drug name or pre-existing condition', 'error');
                     return;
                 }
                 
@@ -660,6 +660,9 @@
                         searchBtn.textContent = 'Search for ADRs';
                         searchBtn.disabled = false;
                         
+                        // Debug output to console
+                        console.log("Search response:", data);
+                        
                         if (data.success) {
                             // If a new drug was added, refresh the drug list
                             if (data.drug_added) {
@@ -673,6 +676,7 @@
                             }
                             
                             if (data.count > 0) {
+                                console.log(`Found ${data.count} results:`, data.results);
                                 // Show results stats
                                 const matchPercentage = data.match_percentage;
                                 resultsStats.innerHTML = `

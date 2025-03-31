@@ -9,9 +9,9 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
 # Configuration
-PORT = 8082
-DIRECTORY = "../frontend/public"
-DATA_FILE = "../../adr_reports.csv"  # Path to main directory
+PORT = 8085
+DIRECTORY = "templates"
+DATA_FILE = "../adr_reports.csv"  # Path to main directory
 
 # Validate and resolve the DATA_FILE path
 try:
@@ -73,9 +73,17 @@ def get_cached_data():
             unique_conditions = set()
             
             try:
+                # Print the full resolved path for debugging
+                full_path = os.path.abspath(DATA_FILE)
+                print(f"Loading data from: {full_path}")
+                
                 with open(DATA_FILE, 'r', newline='', encoding='utf-8') as file:
                     reader = csv.DictReader(file)
                     for row in reader:
+                        # Skip empty rows
+                        if not any(row.values()):
+                            continue
+                            
                         csv_data.append(row)
                         
                         # Build unique sets for dropdown options
@@ -84,7 +92,7 @@ def get_cached_data():
                             unique_drugs.add(drug)
                             
                         condition = row.get('medical_condition', '').strip()
-                        if condition and condition.lower() != 'n/a':
+                        if condition and condition.lower() != 'n/a' and condition.lower() != 'none':
                             unique_conditions.add(condition)
                 
                 # Update cache
@@ -95,6 +103,14 @@ def get_cached_data():
                     'unique_conditions': sorted(list(unique_conditions))
                 }
                 print(f"Cache refreshed. Found {len(csv_data)} records, {len(unique_drugs)} unique drugs, {len(unique_conditions)} unique conditions")
+                
+                # Print the first few records for debugging
+                if csv_data:
+                    print("Sample data (first record):")
+                    for key, value in csv_data[0].items():
+                        print(f"  {key}: {value}")
+                else:
+                    print("WARNING: No data was loaded from the CSV file")
             except Exception as e:
                 print(f"Error reading CSV file: {str(e)}")
                 # Continue with old cache if available, or return empty if not
@@ -157,10 +173,21 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
             results = []
             total_drug_count = 0
             
-            for row in cached_data['data']:
+            print("Debug: Starting search with parameters:")
+            print(f"  - Drug: '{drug_name}'")
+            print(f"  - Condition: '{medical_condition}'")
+            print(f"  - Medication: '{current_medication}'")
+            print(f"  - Total records to search: {len(cached_data['data'])}")
+            
+            for idx, row in enumerate(cached_data['data']):
                 row_drug = row.get('drug_name', '').lower().strip()
                 row_symptoms = row.get('medical_condition', '').lower().strip()
                 row_medication = row.get('current_medication', '').lower().strip()
+                
+                print(f"\nDebug - Record #{idx+1}:")
+                print(f"  Drug: '{row_drug}'")
+                print(f"  Symptoms: '{row_symptoms}'")
+                print(f"  Medication: '{row_medication}'")
                 
                 # Count total occurrences of the drug if drug name was provided
                 drug_match = True
@@ -177,14 +204,36 @@ class DoctorPortalHandler(http.server.SimpleHTTPRequestHandler):
                 # Check for partial symptoms match in comma-separated list
                 symptoms_match = True
                 if medical_condition:
+                    # Reset to false when a condition is provided and needs to be matched
                     symptoms_match = False
-                    if ',' in row_symptoms:
-                        row_symptoms_list = [s.strip() for s in row_symptoms.split(',')]
-                        # Check for partial text match in any of the symptoms
-                        symptoms_match = any(medical_condition in s or s in medical_condition for s in row_symptoms_list)
-                    else:
-                        # Single symptom case - check for partial text match
-                        symptoms_match = medical_condition in row_symptoms or row_symptoms in medical_condition
+                    
+                    # Convert to lowercase for comparison
+                    row_symptoms_lower = row_symptoms.lower()
+                    medical_condition_lower = medical_condition.lower()
+                    
+                    print(f"Comparing '{medical_condition_lower}' with '{row_symptoms_lower}'")
+                    
+                    # Skip empty or placeholder conditions
+                    if row_symptoms_lower in ['none', 'n/a', 'not specified', 'not applicable', '']:
+                        print(f"Skipping placeholder value: '{row_symptoms}'")
+                        continue
+                    
+                    # Simplest matching logic: direct substring match
+                    if medical_condition_lower in row_symptoms_lower:
+                        symptoms_match = True
+                        print(f"MATCHED (condition in symptoms): '{medical_condition_lower}' is in '{row_symptoms_lower}'")
+                    elif row_symptoms_lower in medical_condition_lower:
+                        symptoms_match = True
+                        print(f"MATCHED (symptoms in condition): '{row_symptoms_lower}' is in '{medical_condition_lower}'")
+                    
+                    # If no direct match, try matching individual words if there are multiple conditions
+                    if not symptoms_match and ',' in row_symptoms:
+                        conditions = [c.strip().lower() for c in row_symptoms.split(',')]
+                        for condition in conditions:
+                            if medical_condition_lower in condition or condition in medical_condition_lower:
+                                symptoms_match = True
+                                print(f"MATCHED (in list): '{medical_condition_lower}' matches with '{condition}'")
+                                break
                 
                 # Check medication match if current_medication is provided
                 medication_match = True
