@@ -57,12 +57,12 @@ CliniQAI is a comprehensive healthcare platform that integrates patient reportin
 CliniQAI uses a modular architecture with three main components connected through a central launcher:
 
 ```
-┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+┌─────────────────┐      ┌──────────────────┐       ┌─────────────────┐
 │   Doctor Portal │      │  Patient Portal  │      │     AI Model    │
 │   (Port 8082)   │      │   (Port 8083)    │      │   (Port 8084)   │
 └────────┬────────┘      └────────┬─────────┘      └────────┬────────┘
-         │                        │                          │
-         │                        │                          │
+         │                        │                         │
+         │                        │                         │
          └────────────────┬───────┴──────────────────┬──────┘
                           │                          │
                           ▼                          ▼
@@ -108,8 +108,14 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
    - Create a virtual environment
    - Install all required dependencies
    - Start the application components
+   
+3. **Access the application**
+   - Main Dashboard: http://localhost:8080
+   - Doctor Portal: http://localhost:8082
+   - Patient Portal: http://localhost:8083
+   - AI Model: http://localhost:8084
 
-3. **Manual Setup (Alternative)**
+4. **Manual Setup (Alternative)**
 
    If you prefer to set up manually:
 
@@ -130,12 +136,6 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
    cd app-starter
    python main.py
    ```
-
-4. **Access the application**
-   - Main Dashboard: http://localhost:8080
-   - Doctor Portal: http://localhost:8082
-   - Patient Portal: http://localhost:8083
-   - AI Model: http://localhost:8084
 
 ## 📘 Usage Guide
 
@@ -255,6 +255,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/yuv294">@yuv294</a>, <a href="https://github.com/sathwikhbhat">@sathwikhbhat</a>, and <a href="https://github.com/Bhatia06">@Bhatia06</a></p>
-  <p>© 2025 CliniQAI</p>
+  <p align="center">
+    Made with ❤️ by the Cryptic Hunters:<br>
+    <a href="https://github.com/yuv294">@yuv294</a> • 
+    <a href="https://github.com/sathwikhbhat">@sathwikhbhat</a> • 
+    <a href="https://github.com/Bhatia06">@Bhatia06</a> • 
+    Aditya Akkanavar
+  </p>
+  <p align="center">
+    <sub>© 2025 CliniQAI. All rights reserved.</sub>
+  </p>
 </div>
