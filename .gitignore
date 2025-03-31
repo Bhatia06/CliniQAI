@@ -31,10 +31,28 @@ Thumbs.db
 
 # Local configuration
 .env
+.flaskenv
+*.cfg
+config.py
 
 # Database files
 *.db
 *.sqlite3
 
 # Jupyter Notebook
-.ipynb_checkpoints 
+.ipynb_checkpoints
+
+# Large model files - add specific exceptions with ! if needed
+*.joblib
+*.pkl
+!AI_MODEL/biomedical_chatbot/drug_interaction_model.joblib
+
+# Temporary files
+tmp/
+temp/
+
+# Generated data files
+# Uncommenting the line below will ignore the data file
+# If you want example data to be tracked but ignore new entries, 
+# create a template file and track that instead
+# adr_reports.csv 
