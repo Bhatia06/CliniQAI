@@ -208,11 +208,6 @@ echo  - AI Chatbot: http://localhost:8084
 
 timeout /t 2 /nobreak > nul
 
-echo.
-echo =================================================
-echo ===  PRESS ANY KEY TO START THE APPLICATION   ===
-echo =================================================
-pause >nul
 
 :: Now open the browser after everything is ready
 echo Opening browser to dashboard...
@@ -226,6 +221,10 @@ echo =====================================================
 echo ===  PRESS ANY KEY TO SHUTDOWN THE APPLICATION    ===
 echo =====================================================
 pause >nul
+
+timeout /t 2 /nobreak > nul
+
+start "" http://localhost:8080
 
 echo.
 echo CliniQAI has been stopped. Thank you for using our system.
