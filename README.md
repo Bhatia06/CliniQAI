@@ -91,20 +91,13 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
 
 2. **Easy Setup (Recommended)**
    
-   We've included convenient startup scripts for both Windows and macOS/Linux:
+   Simply run the included startup script:
 
-   **Windows users:**
    ```
    run.bat
    ```
 
-   **macOS/Linux users:**
-   ```
-   chmod +x run.sh
-   ./run.sh
-   ```
-
-   These scripts will automatically:
+   This script will automatically:
    - Create a virtual environment
    - Install all required dependencies
    - Start the application components
@@ -121,13 +114,8 @@ The system uses Flask for all web interfaces and RESTful APIs, with data shared 
 
    ```bash
    # Create and activate a virtual environment
-   # Windows
    python -m venv venv
    venv\Scripts\activate
-
-   # macOS/Linux
-   python3 -m venv venv
-   source venv/bin/activate
 
    # Install dependencies
    pip install -r requirements.txt
