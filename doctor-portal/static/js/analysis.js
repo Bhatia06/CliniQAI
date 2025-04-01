@@ -267,6 +267,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Show results container
         showElement(analysisResultsContainer);
+        
+        // Scroll to the analysis section
+        const analysisSection = document.getElementById('analysis-section');
+        if (analysisSection) {
+            setTimeout(() => {
+                analysisSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300); // Small delay to ensure the section is visible first
+        }
     }
     
     /**

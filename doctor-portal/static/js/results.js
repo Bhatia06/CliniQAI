@@ -137,6 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display results
             displayResults();
             
+            // Scroll to the results section
+            if (resultsSection) {
+                setTimeout(() => {
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300); // Small delay to ensure the section is visible first
+            }
+            
             // Return the results for possible use by the caller
             return window.currentResults;
             
