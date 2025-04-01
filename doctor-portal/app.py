@@ -158,7 +158,7 @@ def search():
         adverse_reaction = data.get('adverse_reaction', '').lower().strip()
         medical_condition = data.get('medical_condition', '').lower().strip()
         date_range = data.get('date_range', 'all')
-        
+    
         cached_data = get_cached_data()
         results = []
         

@@ -24,13 +24,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     /**
+     * Capitalize first letter of words that aren't vowels, conjunctions, or articles
+     */
+    function specialCapitalize(text) {
+        if (!text) return '';
+        
+        // List of words to keep lowercase
+        const keepLowercase = ['a', 'an', 'the', 'and', 'or', 'but', 'nor', 'for', 'so', 'yet', 'in', 'on', 'at', 'to', 'by', 'as', 'of'];
+        
+        return text.split(' ').map((word, index) => {
+            // Skip empty words
+            if (!word) return word;
+            
+            // First word always gets capitalized
+            if (index === 0) {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }
+            
+            // Check if this is a word we want to keep lowercase
+            const lowercaseWord = word.toLowerCase();
+            if (keepLowercase.includes(lowercaseWord)) {
+                return lowercaseWord;
+            }
+            
+            // Check if the word starts with a vowel
+            const firstChar = lowercaseWord.charAt(0);
+            if (['a', 'e', 'i', 'o', 'u'].includes(firstChar)) {
+                return lowercaseWord;
+            }
+            
+            // Otherwise capitalize the first letter
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+    }
+    
+    /**
      * Handle analysis action
      */
     async function handleAnalysis() {
         try {
+            // Check if button is disabled
+            if (analyzeBtn && analyzeBtn.disabled) {
+                console.log('Analyze button is disabled, not proceeding with analysis');
+                return;
+            }
+            
+            // Validate that at least one search field has been filled
+            const drugNameInput = document.getElementById('drug-name');
+            const adverseReactionInput = document.getElementById('adverse-reaction');
+            const medicalConditionInput = document.getElementById('medical-condition');
+            
+            if (!drugNameInput || !adverseReactionInput || !medicalConditionInput) {
+                console.warn('Search form inputs not found');
+                throw new Error('Search form not available');
+            }
+            
+            // Validate search criteria
+            const drugName = drugNameInput.value.trim();
+            const adverseReaction = adverseReactionInput.value.trim();
+            const medicalCondition = medicalConditionInput.value.trim();
+            
+            if (!drugName && !adverseReaction && !medicalCondition) {
+                throw new Error('Please enter at least one search criteria');
+            }
+            
+            // Only show the analysis section
+            const analysisSection = document.getElementById('analysis-section');
+            if (analysisSection) {
+                analysisSection.style.display = 'block';
+            }
+            
             // Show loading, hide results and error
             if (analysisLoadingContainer) {
                 showElement(analysisLoadingContainer);
+                
+                // Update the loading message with special capitalization
+                if (analysisLoadingContainer.querySelector('p')) {
+                    analysisLoadingContainer.querySelector('p').textContent = 'AI is Analyzing Patterns in the Data...';
+                }
             }
             
             if (analysisResultsContainer) {
@@ -53,9 +124,69 @@ document.addEventListener('DOMContentLoaded', () => {
                 analyzeBtn.innerHTML = '<span class="ai-btn-icon">🔄</span>Analyzing...';
             }
             
-            // Get the current search results to analyze
+            // Check if we have search results, if not, perform a default search first
             if (!window.currentResults || window.currentResults.length === 0) {
-                throw new Error('No search results to analyze');
+                // Show a message that we're running a search first
+                if (analysisLoadingContainer && analysisLoadingContainer.querySelector('p')) {
+                    analysisLoadingContainer.querySelector('p').textContent = 'Running Search and Analyzing Results...';
+                }
+                
+                // Trigger a search with default parameters
+                const defaultSearchParams = {
+                    drug_name: '',
+                    adverse_reaction: '',
+                    medical_condition: '',
+                    date_range: 'all'
+                };
+                
+                // Check if the search function is available
+                if (typeof window.handleSearchResults === 'function') {
+                    // Wait for search to complete but don't show the results section
+                    const prevResults = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(defaultSearchParams)
+                    });
+                    
+                    const data = await prevResults.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Failed to Retrieve Search Results');
+                    }
+                    
+                    // Store results in the global variable
+                    window.currentResults = data.results || [];
+                } else {
+                    // Fallback: make the API call directly
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(defaultSearchParams)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'Failed to Retrieve Search Results');
+                    }
+                    
+                    // Store results in the global variable
+                    window.currentResults = data.results || [];
+                }
+                
+                // Reset loading message
+                if (analysisLoadingContainer && analysisLoadingContainer.querySelector('p')) {
+                    analysisLoadingContainer.querySelector('p').textContent = 'AI is Analyzing Patterns in the Data...';
+                }
+            }
+            
+            // If still no results after search attempt, throw an error
+            if (!window.currentResults || window.currentResults.length === 0) {
+                throw new Error('No Search Results to Analyze');
             }
             
             // Call the AI analysis API endpoint
@@ -75,13 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success && data.analysis) {
                 displayAnalysisResults(data.analysis);
             } else {
-                throw new Error(data.message || 'Analysis failed');
+                throw new Error(data.message || 'Analysis Failed');
             }
             
         } catch (error) {
             console.error('Error performing analysis:', error);
             if (analysisErrorMessage) {
-                analysisErrorMessage.textContent = error.message || 'Failed to perform analysis. Please try again.';
+                analysisErrorMessage.textContent = specialCapitalize(error.message) || 'Failed to Perform Analysis. Please Try again.';
                 showElement(analysisErrorMessage);
             }
             if (emptyAnalysis) {
@@ -118,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if there are results to display
         if (!analysisData || analysisData.length === 0) {
             if (analysisErrorMessage) {
-                analysisErrorMessage.textContent = 'No patterns were found in the current results.';
+                analysisErrorMessage.textContent = 'No Patterns Were Found in the Current Results.';
                 showElement(analysisErrorMessage);
             }
             if (emptyAnalysis) {
@@ -129,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Process each analysis item
         analysisData.forEach(item => {
+            // Keep original cases for titles and descriptions - don't capitalize
             const analysisElement = createAnalysisElement(item);
             analysisResultsContainer.appendChild(analysisElement);
         });
@@ -152,7 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create description
         const description = document.createElement('div');
         description.className = 'analysis-description';
-        description.innerHTML = analysis.description.replace(/\[([^\]]+)\]/g, '<span class="highlight">$1</span>');
+        
+        // Replace text within brackets, but maintain special capitalization
+        let processedDescription = analysis.description.replace(/\[([^\]]+)\]/g, (match, content) => {
+            return `<span class="highlight">${content}</span>`;
+        });
+        
+        description.innerHTML = processedDescription;
         
         // Add match rate if available
         let matchRate = null;

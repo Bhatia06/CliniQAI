@@ -54,10 +54,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     /**
-     * Handle search results
+     * Capitalize first letter of words that aren't vowels, conjunctions, or articles
      */
-    async function handleSearchResults(searchParams) {
+    function specialCapitalize(text) {
+        if (!text) return '';
+        
+        // List of words to keep lowercase
+        const keepLowercase = ['a', 'an', 'the', 'and', 'or', 'but', 'nor', 'for', 'so', 'yet', 'in', 'on', 'at', 'to', 'by', 'as', 'of'];
+        
+        return text.split(' ').map((word, index) => {
+            // Skip empty words
+            if (!word) return word;
+            
+            // First word always gets capitalized
+            if (index === 0) {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }
+            
+            // Check if this is a word we want to keep lowercase
+            const lowercaseWord = word.toLowerCase();
+            if (keepLowercase.includes(lowercaseWord)) {
+                return lowercaseWord;
+            }
+            
+            // Check if the word starts with a vowel
+            const firstChar = lowercaseWord.charAt(0);
+            if (['a', 'e', 'i', 'o', 'u'].includes(firstChar)) {
+                return lowercaseWord;
+            }
+            
+            // Otherwise capitalize the first letter
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+    }
+    
+    /**
+     * Handle search results
+     * Made globally available for use by analysis.js
+     */
+    window.handleSearchResults = async function(searchParams) {
         try {
+            // Show the results section
+            const resultsSection = document.getElementById('results-section');
+            if (resultsSection) {
+                resultsSection.style.display = 'block';
+            }
+            
             // Call the API to get search results
             const response = await fetch('/api/search', {
                 method: 'POST',
@@ -73,12 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
             hideElement(loadingContainer);
             
             if (!data.success) {
-                throw new Error(data.message || 'Failed to retrieve search results');
+                throw new Error(data.message || 'Failed to Retrieve Search Results');
             }
             
             // Update results count
             if (resultsCount) {
-                resultsCount.textContent = `${data.count} results found`;
+                resultsCount.textContent = `${data.count} Results Found`;
             }
             
             // Store results in state
@@ -95,10 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Display results
             displayResults();
             
+            // Return the results for possible use by the caller
+            return window.currentResults;
+            
         } catch (error) {
             console.error('Error handling search results:', error);
             hideElement(loadingContainer);
-            displayError(error.message || 'An error occurred while processing search results');
+            displayError(error.message || 'An error occurred while Processing Search Results');
+            return [];
         }
     }
     
@@ -116,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Check if there are results to display
         if (filteredResults.length === 0) {
-            resultsList.innerHTML = '<div class="no-results">No matching results found.</div>';
+            resultsList.innerHTML = '<div class="no-results">No Matching Results Found.</div>';
             hideElement(document.querySelector('.pagination'));
             return;
         }
@@ -270,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     /**
-     * Handle sort change
+     * Handle sort change event
      */
     function handleSortChange(event) {
         const sortOption = event.target.value;
@@ -293,7 +339,4 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
     }
-    
-    // Expose function to global scope for search.js to use
-    window.handleSearchResults = handleSearchResults;
 }); 

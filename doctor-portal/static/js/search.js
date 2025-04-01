@@ -139,6 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.classList.contains('dropdown-item')) {
                 inputElement.value = e.target.textContent;
                 dropdownElement.style.display = 'none';
+                
+                // Trigger an input event to update button states
+                const inputEvent = new Event('input', { bubbles: true });
+                inputElement.dispatchEvent(inputEvent);
             }
         });
     }
@@ -221,6 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     event.preventDefault();
                     inputElement.value = activeItem.textContent;
                     dropdownElement.style.display = 'none';
+                    
+                    // Trigger an input event to update button states
+                    const inputEvent = new Event('input', { bubbles: true });
+                    inputElement.dispatchEvent(inputEvent);
                 }
                 break;
                 
@@ -252,6 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleSearchSubmit(event) {
         event.preventDefault();
         
+        // Check if the button is disabled
+        const searchBtn = document.getElementById('search-btn');
+        if (searchBtn && searchBtn.disabled) {
+            console.log('Search button is disabled, not proceeding with search');
+            return;
+        }
+        
         // Get search criteria
         const drugName = drugNameInput.value.trim();
         const adverseReaction = adverseReactionInput.value.trim();
@@ -260,7 +275,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Validate search criteria
         if (!drugName && !adverseReaction && !medicalCondition) {
-            displayError('Please enter at least one search criteria.');
+            // Display error message
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.textContent = 'Please enter at least one search criteria.';
+                errorMessage.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
             return;
         }
         

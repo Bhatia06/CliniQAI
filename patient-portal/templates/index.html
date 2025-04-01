@@ -14,38 +14,38 @@
             <div class="logo-section">
                 <h1>Patient Portal</h1>
                 <p class="tagline">Adverse Drug Reaction Reporting System</p>
-            </div>
+                </div>
             <div class="animation-container">
                 <div class="heartbeat-animation"></div>
             </div>
         </header>
-
+        
         <main>
             <section class="card" id="report-form-section">
                 <h2>Report Adverse Drug Reaction</h2>
                 <p>Please fill out the form below to report any adverse reactions you've experienced.</p>
                 
-                <form id="adr-form">
-                    <div class="form-row">
-                        <div class="form-group">
+            <form id="adr-form">
+                <div class="form-row">
+                    <div class="form-group">
                             <label for="drug-name">Drug Name*</label>
                             <div class="input-wrapper">
                                 <input type="text" id="drug-name" name="drug_name" required>
                                 <div id="drug-dropdown" class="dropdown-list"></div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
+                    </div>
+                    
+                    <div class="form-group">
                             <label for="cause">Reason for Taking*</label>
                             <div class="input-wrapper">
                                 <input type="text" id="cause" name="cause_of_administration" required>
                                 <div id="cause-dropdown" class="dropdown-list"></div>
                             </div>
-                        </div>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
                             <label for="medical-condition">Medical Condition*</label>
                             <div class="input-wrapper">
                                 <input type="text" id="medical-condition" name="medical_condition" required>
@@ -68,23 +68,23 @@
                     <div class="form-group">
                         <label for="adverse-reaction">Adverse Reaction Description*</label>
                         <textarea id="adverse-reaction" name="adverse_reaction" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="severity">Severity*</label>
+                        <select id="severity" name="severity" required>
+                                <option value="" disabled selected>Select Severity</option>
+                            <option value="Mild">Mild</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Severe">Severe</option>
+                        </select>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="severity">Severity*</label>
-                            <select id="severity" name="severity" required>
-                                <option value="" disabled selected>Select Severity</option>
-                                <option value="Mild">Mild</option>
-                                <option value="Moderate">Moderate</option>
-                                <option value="Severe">Severe</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="current-medication">Other Medications (Optional)</label>
+                    <div class="form-group">
+                        <label for="current-medication">Other Medications (Optional)</label>
                             <div class="input-wrapper">
-                                <input type="text" id="current-medication" name="current_medication">
+                            <input type="text" id="current-medication" name="current_medication">
                                 <div id="medication-dropdown" class="dropdown-list"></div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                     
                     <div class="form-actions">
                         <button type="submit" id="submit-btn">Submit Report</button>
-                    </div>
+                </div>
                 </form>
                 
                 <div id="success-message" class="message success-message"></div>
@@ -112,34 +112,34 @@
                             <option value="Severe">Severe Severity</option>
                         </select>
                     </div>
+        </div>
+            
+            <div id="reports-container">
+                    <div id="loading-container">
+                    <p id="loading-message">Loading your reports...</p>
+                    <div class="loading-spinner"></div>
                 </div>
                 
-                <div id="reports-container">
-                    <div id="loading-container">
-                        <p id="loading-message">Loading your reports...</p>
-                        <div class="loading-spinner"></div>
-                    </div>
-                    
                     <table id="reports-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Patient ID</th>
-                                <th>Drug</th>
-                                <th>Condition</th>
-                                <th>Reason</th>
-                                <th>Reaction</th>
-                                <th>Severity</th>
-                                <th>Gender</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reports-body">
-                            <!-- Reports will be populated here -->
-                        </tbody>
-                    </table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Patient ID</th>
+                            <th>Drug</th>
+                            <th>Condition</th>
+                            <th>Reason</th>
+                            <th>Reaction</th>
+                            <th>Severity</th>
+                            <th>Gender</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reports-body">
+                        <!-- Reports will be populated here -->
+                    </tbody>
+                </table>
                     <p id="no-reports-message">No reports found. Please submit a new report above to see it here.</p>
                     <p id="report-count-message">Showing <span id="visible-count">0</span> out of <span id="total-count">0</span> reports.</p>
-                </div>
+            </div>
             </section>
         </main>
         
@@ -152,4 +152,4 @@
     <script src="{{ url_for('static', filename='js/form.js') }}"></script>
     <script src="{{ url_for('static', filename='js/reports.js') }}"></script>
 </body>
-</html> 
+</html>
