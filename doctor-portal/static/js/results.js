@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationInfo = document.getElementById('pagination-info');
     const currentPageSpan = document.getElementById('current-page');
     const totalPagesSpan = document.getElementById('total-pages');
+    const analyzeAiBtn = document.getElementById('analyze-ai-btn');
     
     // State variables
-    let currentResults = [];
     let filteredResults = [];
     let currentPage = 1;
     let totalPages = 1;
@@ -42,6 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (nextPageBtn) {
             nextPageBtn.addEventListener('click', () => navigateToPage(currentPage + 1));
+        }
+        
+        // Set up analyze with AI button
+        if (analyzeAiBtn) {
+            analyzeAiBtn.addEventListener('click', () => {
+                // Open the chatbot in a new tab
+                window.open('http://localhost:8084', '_blank');
+            });
         }
     }
     
@@ -74,11 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             // Store results in state
-            currentResults = data.results || [];
+            window.currentResults = data.results || [];
             
             // Apply current sorting
             const sortOption = sortSelect ? sortSelect.value : 'date-desc';
-            filteredResults = sortResults(currentResults, sortOption);
+            filteredResults = sortResults(window.currentResults, sortOption);
             
             // Calculate pagination
             totalPages = Math.max(1, Math.ceil(filteredResults.length / resultsPerPage));
@@ -180,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const conditionDetail = createDetailItem('Medical Condition', result.medical_condition);
         details.appendChild(conditionDetail);
         
-        // Severity
-        const severityDetail = createDetailItem('Severity', result.severity);
+        // Severity - only show the badge, not the text
+        const severityDetail = createDetailItem('Severity', '');
         severityDetail.querySelector('.detail-value').appendChild(createSeverityBadge(result.severity || 'Unknown'));
         details.appendChild(severityDetail);
         
@@ -195,24 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
             details.appendChild(medicationDetail);
         }
         
-        // Add "Analyze with AI" button
-        const actions = document.createElement('div');
-        actions.className = 'result-actions';
-        
-        const analyzeBtn = document.createElement('button');
-        analyzeBtn.className = 'btn btn-accent result-analyze-btn';
-        analyzeBtn.innerHTML = '<span class="ai-btn-icon">🧠</span>Analyze with AI';
-        analyzeBtn.addEventListener('click', () => {
-            // Open the chatbot in a new tab
-            window.open('http://localhost:8084', '_blank');
-        });
-        
-        actions.appendChild(analyzeBtn);
-        
         // Assemble the card
         card.appendChild(header);
         card.appendChild(details);
-        card.appendChild(actions);
         
         return card;
     }
@@ -231,7 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const valueElement = document.createElement('div');
         valueElement.className = 'detail-value';
         
-        if (typeof value === 'string') {
+        // Special case for severity badge - don't add any text
+        if (value === '' && label === 'Severity') {
+            // Don't set textContent, badge will be appended later
+        } else if (typeof value === 'string') {
             valueElement.textContent = formatEmptyValue(value);
         } else {
             valueElement.appendChild(value);
@@ -278,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function handleSortChange(event) {
         const sortOption = event.target.value;
-        filteredResults = sortResults(currentResults, sortOption);
+        filteredResults = sortResults(window.currentResults, sortOption);
         currentPage = 1; // Reset to first page
         displayResults();
     }

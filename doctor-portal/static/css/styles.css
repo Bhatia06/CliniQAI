@@ -333,8 +333,8 @@ label {
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
-    gap: 15px;
+    gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 /* Message styles */
@@ -797,11 +797,18 @@ footer {
 
 /* Result card styles */
 .result-card {
-    background: rgba(23, 32, 73, 0.7);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-left: 4px solid var(--primary);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .result-header {
@@ -892,4 +899,9 @@ footer {
     padding: 30px;
     color: var(--text-secondary);
     font-style: italic;
+}
+
+/* Add some spacing to separate the search form buttons */
+#analyze-btn {
+    margin-left: 0.5rem;
 } 

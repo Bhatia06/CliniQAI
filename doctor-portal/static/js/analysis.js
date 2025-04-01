@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const analysisLoadingContainer = document.getElementById('analysis-loading-container');
     const analysisResultsContainer = document.getElementById('analysis-results-container');
     const analysisErrorMessage = document.getElementById('analysis-error-message');
+    const emptyAnalysis = document.getElementById('empty-analysis');
     
     // Initialize
     init();
@@ -41,6 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 hideElement(analysisErrorMessage);
             }
             
+            if (emptyAnalysis) {
+                hideElement(emptyAnalysis);
+            }
+            
             // Disable analyze button
             if (analyzeBtn) {
                 analyzeBtn.disabled = true;
@@ -48,32 +53,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 analyzeBtn.innerHTML = '<span class="ai-btn-icon">🔄</span>Analyzing...';
             }
             
-            // Simulate API call with timeout
-            // In a real app, this would be an actual API call to analyze the data
-            const mockAnalysisCall = new Promise((resolve) => {
-                setTimeout(() => {
-                    // This is dummy data - in a real app, this would come from the API
-                    resolve({
-                        success: true,
-                        analysis: mockAnalysisData
-                    });
-                }, 3000); // Simulate longer analysis time
+            // Get the current search results to analyze
+            if (!window.currentResults || window.currentResults.length === 0) {
+                throw new Error('No search results to analyze');
+            }
+            
+            // Call the AI analysis API endpoint
+            const response = await fetch('/api/ai-analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    results: window.currentResults
+                })
             });
             
-            const response = await mockAnalysisCall;
+            const data = await response.json();
             
             // Process the results
-            if (response.success && response.analysis) {
-                displayAnalysisResults(response.analysis);
+            if (data.success && data.analysis) {
+                displayAnalysisResults(data.analysis);
             } else {
-                throw new Error('Analysis failed');
+                throw new Error(data.message || 'Analysis failed');
             }
             
         } catch (error) {
             console.error('Error performing analysis:', error);
             if (analysisErrorMessage) {
-                analysisErrorMessage.textContent = 'Failed to perform analysis. Please try again.';
+                analysisErrorMessage.textContent = error.message || 'Failed to perform analysis. Please try again.';
                 showElement(analysisErrorMessage);
+            }
+            if (emptyAnalysis) {
+                showElement(emptyAnalysis);
             }
         } finally {
             // Hide loading
@@ -97,6 +109,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Clear previous results
         analysisResultsContainer.innerHTML = '';
+        
+        // Hide empty state
+        if (emptyAnalysis) {
+            hideElement(emptyAnalysis);
+        }
+        
+        // Check if there are results to display
+        if (!analysisData || analysisData.length === 0) {
+            if (analysisErrorMessage) {
+                analysisErrorMessage.textContent = 'No patterns were found in the current results.';
+                showElement(analysisErrorMessage);
+            }
+            if (emptyAnalysis) {
+                showElement(emptyAnalysis);
+            }
+            return;
+        }
         
         // Process each analysis item
         analysisData.forEach(item => {
@@ -166,28 +195,4 @@ document.addEventListener('DOMContentLoaded', () => {
         
         return element;
     }
-    
-    // Mock analysis data for demonstration
-    const mockAnalysisData = [
-        {
-            title: "Strong Correlation: Amoxicillin and Severe Reactions",
-            description: "Analysis shows that [Amoxicillin] has a significantly higher rate of [severe adverse reactions] compared to other antibiotics in the database. In particular, respiratory symptoms and rashes occur more frequently, suggesting a potential allergic component.",
-            confidence: 0.87
-        },
-        {
-            title: "Gender-Specific Pattern: Gastrointestinal Effects",
-            description: "Female patients report [gastrointestinal side effects] from NSAIDs like [Ibuprofen] at approximately 1.8 times the rate of male patients. This pattern is consistent across age groups and dosage levels.",
-            confidence: 0.79
-        },
-        {
-            title: "Drug Interaction Pattern Detected",
-            description: "Patients taking [Warfarin] concurrently with [NSAIDs] show a 3.2x increased risk of bleeding complications. Consider alternative pain management for patients on anticoagulant therapy.",
-            confidence: 0.92
-        },
-        {
-            title: "Dosage Correlation with Side Effects",
-            description: "For [Metformin], adverse gastrointestinal effects show a strong correlation with starting dosage. Patients started on lower doses with gradual increases reported [fewer side effects] while maintaining efficacy.",
-            confidence: 0.83
-        }
-    ];
 }); 
