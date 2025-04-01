@@ -1,0 +1,118 @@
+/* Responsive styles */
+@media (max-width: 992px) {
+    .container {
+        padding: 20px;
+    }
+    
+    .logo-section h1 {
+        font-size: 2rem;
+    }
+    
+    .animation-container {
+        width: 100px;
+    }
+    
+    .form-row {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .animation-container {
+        display: none;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .results-actions,
+    .form-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
+    
+    .sort-container {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .sort-container select {
+        width: 100%;
+        margin-top: 5px;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    .logo-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo-section h1::after {
+        height: 2px;
+    }
+    
+    .tagline {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .card-header .card-actions {
+        width: 100%;
+    }
+    
+    .card-header .card-actions button {
+        width: 100%;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .pagination-btn {
+        width: 100%;
+    }
+} 
