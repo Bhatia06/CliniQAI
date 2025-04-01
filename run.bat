@@ -57,6 +57,17 @@ if exist ai_model.lock (
     del /f ai_model.lock >nul 2>&1
 )
 
+
+color c
+cls
+echo PLEASE NOTE THAT IF THIS IS THE FIRST TIME RUNNING THIS SOFTWARE, IT MIGHT TAKE 5~10 MINUTES FOR THE SOFTWARE TO CHECK AND INSTALL THE VIRTUAL ENVIRONMENT AND ALL THE REQUIRED DEPENDENCIES 
+echo.
+echo.
+pause
+
+color a
+cls
+
 :: Check if Python is installed
 where python >nul 2>nul
 if %ERRORLEVEL% neq 0 (
@@ -123,7 +134,7 @@ if not exist venv\Lib\site-packages\joblib (
     
     if %ERRORLEVEL% neq 0 (
         echo WARNING: Failed to install AI model dependencies
-        echo The AI chatbot may not function correctly.
+        echo The AI chatbot may not function correctly. 
         echo.
     else
         echo AI model dependencies installed successfully.
