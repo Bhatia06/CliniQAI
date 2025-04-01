@@ -57,7 +57,7 @@ CliniQAI is a comprehensive healthcare platform that integrates patient reportin
 CliniQAI uses a modular architecture with three main components connected through a central launcher:
 
 ```
-┌─────────────────┐      ┌──────────────────┐       ┌─────────────────┐
+┌─────────────────┐      ┌──────────────────┐      ┌─────────────────┐
 │   Doctor Portal │      │  Patient Portal  │      │     AI Model    │
 │   (Port 8082)   │      │   (Port 8083)    │      │   (Port 8084)   │
 └────────┬────────┘      └────────┬─────────┘      └────────┬────────┘
