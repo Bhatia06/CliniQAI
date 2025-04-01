@@ -12,6 +12,7 @@
     --bg-accent: #202551;
     --bg-input: #070e2c;
     --bg-button-secondary: #2a325e;
+    --bg-result-card: #1a2657;
     
     /* Text colors */
     --text-light: #ffffff;
@@ -793,44 +794,72 @@ footer {
 
 /* Result card styles */
 .result-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    background: linear-gradient(145deg, var(--bg-result-card), #142144);
+    border: 1px solid rgba(97, 199, 250, 0.15);
+    border-radius: 0.8rem;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 6px;
+    background: linear-gradient(90deg, transparent, rgba(94, 23, 235, 0.5));
+    border-radius: 0 0.8rem 0 0;
 }
 
 .result-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    border-color: rgba(97, 199, 250, 0.4);
 }
 
 .result-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .result-title {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-light);
+    letter-spacing: 0.5px;
 }
 
 .result-meta {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
+    display: flex;
+    gap: 15px;
+}
+
+.result-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .result-details {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    border-radius: 8px;
 }
 
 .detail-item {
@@ -840,22 +869,37 @@ footer {
 
 .detail-label {
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 5px;
+    color: rgba(97, 199, 250, 0.7);
+    margin-bottom: 6px;
+    font-weight: 500;
 }
 
 .detail-value {
-    font-size: 1rem;
+    font-size: 1.05rem;
 }
 
 .result-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .result-analyze-btn {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    background: linear-gradient(135deg, var(--accent), var(--primary-dark));
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(94, 23, 235, 0.3);
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.result-analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(94, 23, 235, 0.4);
 }
 
 /* Severity badges */
@@ -901,4 +945,29 @@ footer {
 .input-wrapper {
     position: relative;
     width: 100%;
+}
+
+/* Results Section */
+.results-section {
+    position: relative;
+}
+
+.results-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--secondary));
+}
+
+.results-section .card-header {
+    background: linear-gradient(135deg, #2a326e, #1d2251);
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(97, 199, 250, 0.2);
+}
+
+.results-section .card-body {
+    background: linear-gradient(180deg, #1a2455, #111a40);
 } 
