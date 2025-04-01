@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationInfo = document.getElementById('pagination-info');
     const currentPageSpan = document.getElementById('current-page');
     const totalPagesSpan = document.getElementById('total-pages');
-    const analyzeAiBtn = document.getElementById('analyze-ai-btn');
     
     // State variables
     let filteredResults = [];
@@ -42,14 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (nextPageBtn) {
             nextPageBtn.addEventListener('click', () => navigateToPage(currentPage + 1));
-        }
-        
-        // Set up analyze with AI button
-        if (analyzeAiBtn) {
-            analyzeAiBtn.addEventListener('click', () => {
-                // Open the chatbot in a new tab
-                window.open('http://localhost:8084', '_blank');
-            });
         }
     }
     
@@ -90,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Handle search results
-     * Made globally available for use by analysis.js
      */
     window.handleSearchResults = async function(searchParams) {
         try {

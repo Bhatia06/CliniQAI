@@ -220,20 +220,11 @@ def search():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
-    """Perform AI analysis on the search results"""
-    try:
-        # In a real application, this would call the AI model
-        # Here we'll just return a successful response with placeholder data
-        
-        return jsonify({
-            'success': True,
-            'message': 'Analysis completed successfully',
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': str(e)
-        }), 500
+    """Removed: Perform AI analysis on the search results"""
+    return jsonify({
+        'success': False,
+        'message': 'Analysis functionality has been removed'
+    }), 404
 
 @app.route('/api/drugs', methods=['GET'])
 def get_drugs():
@@ -300,160 +291,15 @@ def add_drug():
 
 @app.route('/api/ai-analyze', methods=['POST'])
 def ai_analyze():
-    """Proxy the request to the AI chatbot for pattern analysis"""
-    try:
-        data = request.get_json()
-        
-        # Get a sample drug and condition from the first result
-        drug_to_use = ""
-        preexisting_conditions = []
-        
-        if data.get('results') and len(data.get('results')) > 0:
-            sample_result = data['results'][0]
-            drug_to_use = sample_result.get('drug_name', '')
-            preexisting_conditions = [sample_result.get('medical_condition', '')]
-        
-        # Prepare the data for the AI model
-        ai_data = {
-            'current_medications': [],  # We don't have this info in our results
-            'drug_to_use': drug_to_use,
-            'preexisting_conditions': preexisting_conditions,
-            'age': 45,  # Default values since we don't have this info
-            'weight': 70
-        }
-        
-        # Call the AI model API
-        ai_model_url = 'http://localhost:8084/api/analyze'
-        
-        try:
-            ai_response = requests.post(ai_model_url, json=ai_data, timeout=10)
-            
-            if ai_response.status_code == 200:
-                result = ai_response.json()
-                
-                # Transform the AI model response to our expected format
-                analysis_results = transform_ai_response(result, data.get('results', []))
-                
-                return jsonify({
-                    'success': True,
-                    'analysis': analysis_results
-                })
-            else:
-                # If the AI model API returns an error, fall back to mock data
-                return jsonify({
-                    'success': True,
-                    'analysis': generate_mock_analysis(data.get('results', []))
-                })
-                
-        except requests.RequestException as e:
-            print(f"Error connecting to AI model: {str(e)}")
-            # Fall back to mock data if we can't connect to the AI model
-            return jsonify({
-                'success': True,
-                'analysis': generate_mock_analysis(data.get('results', []))
-            })
-        
-    except Exception as e:
-        print(f"Error in AI analysis API: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': f"Error performing analysis: {str(e)}"
-        }), 500
-
-def transform_ai_response(ai_response, search_results):
-    """Transform the AI model response to our expected format"""
-    if not ai_response.get('success', False):
-        return generate_mock_analysis(search_results)
-    
-    analysis = ai_response.get('analysis', {})
-    adverse_reactions = analysis.get('adverse_reactions', [])
-    
-    results = []
-    
-    # Convert the adverse reactions to our format
-    for i, reaction in enumerate(adverse_reactions):
-        if i >= 4:  # Limit to 4 results
-            break
-            
-        title = f"Potential Risk: {reaction.get('reaction_name', 'Unknown')}"
-        description = f"Analysis shows that [{ analysis.get('medication_info', {}).get('drug_to_use', 'the medication') }] may cause [{ reaction.get('reaction_name', 'adverse reactions') }]. "
-        
-        if reaction.get('reason'):
-            description += f"{reaction.get('reason')}. "
-            
-        # Add recommendation if available
-        if reaction.get('recommendation'):
-            description += f"Recommendation: {reaction.get('recommendation')}"
-        
-        confidence = min(float(reaction.get('probability', 0)) + 0.3, 0.95)  # Adjust confidence for display
-        
-        results.append({
-            'title': title,
-            'description': description,
-            'confidence': confidence
-        })
-    
-    return results
-
-def generate_mock_analysis(search_results):
-    """Generate mock analysis results based on the search results"""
-    if not search_results or len(search_results) == 0:
-        return []
-    
-    # Extract drug names and conditions from search results
-    drugs = set()
-    conditions = set()
-    reactions = set()
-    
-    for result in search_results:
-        if result.get('drug_name'):
-            drugs.add(result.get('drug_name'))
-        if result.get('medical_condition'):
-            conditions.add(result.get('medical_condition'))
-        if result.get('adverse_reaction'):
-            reactions.add(result.get('adverse_reaction'))
-    
-    # Convert sets to lists for easier access
-    drug_list = list(drugs)
-    condition_list = list(conditions)
-    reaction_list = list(reactions)
-    
-    # Generate mock analysis patterns
-    analysis_results = []
-    
-    if drug_list and reaction_list:
-        analysis_results.append({
-            'title': f"Correlation: {drug_list[0]} and Adverse Reactions",
-            'description': f"Analysis shows that [{drug_list[0]}] has a higher rate of [{reaction_list[0] if reaction_list else 'adverse reactions'}] compared to other medications in the database. Consider monitoring patients closely for these symptoms.",
-            'confidence': random.uniform(0.75, 0.9)
-        })
-    
-    if drug_list and condition_list:
-        analysis_results.append({
-            'title': f"Medical Condition Impact",
-            'description': f"Patients with [{condition_list[0] if condition_list else 'this condition'}] taking [{drug_list[0]}] may experience more severe side effects. Consider adjusting dosage or alternative treatments for these patients.",
-            'confidence': random.uniform(0.7, 0.85)
-        })
-    
-    if len(drug_list) > 1:
-        analysis_results.append({
-            'title': "Potential Drug Interaction",
-            'description': f"Patients taking [{drug_list[0]}] concurrently with [{drug_list[1] if len(drug_list) > 1 else 'other medications'}] show an increased risk of adverse effects. Consider alternative treatment options when possible.",
-            'confidence': random.uniform(0.8, 0.95)
-        })
-    
-    if drug_list:
-        analysis_results.append({
-            'title': "Dosage Recommendation",
-            'description': f"For [{drug_list[0]}], starting with a lower dose and gradually increasing may reduce the incidence of [{reaction_list[0] if reaction_list else 'adverse reactions'}] while maintaining efficacy.",
-            'confidence': random.uniform(0.7, 0.88)
-        })
-    
-    return analysis_results
+    """Removed: Proxy the request to the AI chatbot for pattern analysis"""
+    return jsonify({
+        'success': False,
+        'message': 'Analysis functionality has been removed'
+    }), 404
 
 if __name__ == '__main__':
     preload_data_cache()
-    # Start the AI model server on application startup
-    start_ai_model_server()
+    # We no longer need to start the AI model server since we removed analysis functionality
+    # start_ai_model_server()
     
     app.run(port=8082, debug=True)

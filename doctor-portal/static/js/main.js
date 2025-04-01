@@ -5,8 +5,7 @@
 
 // Global variables and constants
 const API_ENDPOINTS = {
-    search: '/api/search',
-    analyze: '/api/analyze'
+    search: '/api/search'
 };
 
 // Initialize application when DOM is loaded
@@ -16,12 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Hide loading containers initially
     hideElement(document.getElementById('loading-container'));
-    hideElement(document.getElementById('analysis-loading-container'));
     
     // Hide containers until we have results
     hideElement(document.getElementById('results-container'));
     document.getElementById('error-message').style.display = 'none';
-    document.getElementById('analysis-error-message').style.display = 'none';
     
     // Set up button disabling logic
     setupButtonDisabling();
@@ -32,23 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const adverseReactionInput = document.getElementById('adverse-reaction');
         const medicalConditionInput = document.getElementById('medical-condition');
         const searchBtn = document.getElementById('search-btn');
-        const analyzeBtn = document.getElementById('analyze-btn');
         
-        if (drugNameInput && adverseReactionInput && medicalConditionInput && searchBtn && analyzeBtn) {
+        if (drugNameInput && adverseReactionInput && medicalConditionInput && searchBtn) {
             const hasInput = 
                 drugNameInput.value.trim() !== '' || 
                 adverseReactionInput.value.trim() !== '' || 
                 medicalConditionInput.value.trim() !== '';
             
             searchBtn.disabled = !hasInput;
-            analyzeBtn.disabled = !hasInput;
             
             if (hasInput) {
                 searchBtn.classList.remove('btn-disabled');
-                analyzeBtn.classList.remove('btn-disabled');
             } else {
                 searchBtn.classList.add('btn-disabled');
-                analyzeBtn.classList.add('btn-disabled');
             }
             
             console.log('Initial button state check - Has input:', hasInput);
@@ -426,9 +419,8 @@ function setupButtonDisabling() {
     const adverseReactionInput = document.getElementById('adverse-reaction');
     const medicalConditionInput = document.getElementById('medical-condition');
     const searchBtn = document.getElementById('search-btn');
-    const analyzeBtn = document.getElementById('analyze-btn');
     
-    if (!drugNameInput || !adverseReactionInput || !medicalConditionInput || !searchBtn || !analyzeBtn) {
+    if (!drugNameInput || !adverseReactionInput || !medicalConditionInput || !searchBtn) {
         console.warn('Not all required elements found for button disabling');
         return;
     }
@@ -467,15 +459,12 @@ function setupButtonDisabling() {
         console.log('Drug:', drugValue, 'Reaction:', reactionValue, 'Condition:', conditionValue);
         
         searchBtn.disabled = !hasInput;
-        analyzeBtn.disabled = !hasInput;
         
         // Update button styles
         if (hasInput) {
             searchBtn.classList.remove('btn-disabled');
-            analyzeBtn.classList.remove('btn-disabled');
         } else {
             searchBtn.classList.add('btn-disabled');
-            analyzeBtn.classList.add('btn-disabled');
         }
     }
 } 
