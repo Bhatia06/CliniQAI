@@ -51,6 +51,30 @@ document.addEventListener('DOMContentLoaded', () => {
         setupDropdown(drugNameInput, drugNameDropdown, drugsList);
         setupDropdown(adverseReactionInput, adverseReactionDropdown, reactionsList);
         setupDropdown(medicalConditionInput, medicalConditionDropdown, conditionsList);
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdowns = [drugNameDropdown, adverseReactionDropdown, medicalConditionDropdown];
+            
+            // Close all dropdowns if click is outside any input or dropdown
+            if (!isInsideAnyDropdownOrInput(e.target)) {
+                dropdowns.forEach(dropdown => {
+                    if (dropdown) dropdown.style.display = 'none';
+                });
+            }
+        });
+    }
+    
+    /**
+     * Check if element is inside any dropdown or input
+     */
+    function isInsideAnyDropdownOrInput(element) {
+        const inputs = [drugNameInput, adverseReactionInput, medicalConditionInput];
+        const dropdowns = [drugNameDropdown, adverseReactionDropdown, medicalConditionDropdown];
+        
+        // Check if element is inside any input or dropdown
+        return inputs.some(input => input && input.contains(element)) || 
+               dropdowns.some(dropdown => dropdown && dropdown.contains(element));
     }
     
     /**
@@ -110,39 +134,59 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupDropdown(inputElement, dropdownElement, itemsList) {
         if (!inputElement || !dropdownElement) return;
         
-        // Show dropdown when input is focused
+        // Show dropdown on input focus
         inputElement.addEventListener('focus', () => {
-            populateDropdown(dropdownElement, inputElement.value.trim().toLowerCase(), itemsList);
-            dropdownElement.style.display = 'block';
+            populateDropdown(dropdownElement, itemsList, inputElement.value);
         });
         
-        // Hide dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target !== inputElement && e.target !== dropdownElement) {
-                dropdownElement.style.display = 'none';
-            }
+        // Update dropdown on input
+        inputElement.addEventListener('input', () => {
+            populateDropdown(dropdownElement, itemsList, inputElement.value);
         });
-        
-        // Update dropdown as user types
-        inputElement.addEventListener('input', debounce(() => {
-            populateDropdown(dropdownElement, inputElement.value.trim().toLowerCase(), itemsList);
-            dropdownElement.style.display = 'block';
-        }, 200));
         
         // Handle keyboard navigation
         inputElement.addEventListener('keydown', (e) => {
-            handleDropdownKeyboard(e, dropdownElement, inputElement);
+            if (dropdownElement.style.display === 'block') {
+                handleDropdownKeyNav(e, dropdownElement, inputElement);
+            }
+            
+            // Show dropdown on arrow down if it's closed
+            if (e.key === 'ArrowDown' && dropdownElement.style.display !== 'block') {
+                populateDropdown(dropdownElement, itemsList, inputElement.value);
+                dropdownElement.style.display = 'block';
+                e.preventDefault();
+            }
+            
+            // Hide dropdown on escape
+            if (e.key === 'Escape') {
+                dropdownElement.style.display = 'none';
+                e.preventDefault();
+            }
         });
         
-        // Set up click handler for dropdown items
+        // Show dropdown when clicking on input
+        inputElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            populateDropdown(dropdownElement, itemsList, inputElement.value);
+        });
+        
+        // Handle clicks on dropdown items
         dropdownElement.addEventListener('click', (e) => {
-            if (e.target.classList.contains('dropdown-item')) {
-                inputElement.value = e.target.textContent;
+            const item = e.target.closest('.dropdown-item');
+            if (item && !item.classList.contains('no-results')) {
+                inputElement.value = item.textContent.trim();
                 dropdownElement.style.display = 'none';
                 
                 // Trigger an input event to update button states
                 const inputEvent = new Event('input', { bubbles: true });
                 inputElement.dispatchEvent(inputEvent);
+                
+                // Move focus to next input if available
+                const inputs = Array.from(document.querySelectorAll('.dropdown-input'));
+                const currentIndex = inputs.indexOf(inputElement);
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                }
             }
         });
     }
@@ -150,80 +194,100 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Populate dropdown with filtered items
      */
-    function populateDropdown(dropdownElement, searchTerm, itemsList) {
-        // Clear current dropdown items
+    function populateDropdown(dropdownElement, itemsList, filter = '') {
         dropdownElement.innerHTML = '';
         
-        // Filter items based on search term
-        let filteredItems = [];
-        if (searchTerm) {
-            filteredItems = itemsList.filter(item => 
-                item.toLowerCase().includes(searchTerm)
-            ).slice(0, 10); // Limit to 10 items
-        } else {
-            filteredItems = itemsList.slice(0, 10); // Show first 10 items
+        if (!itemsList || itemsList.length === 0) {
+            const noItems = document.createElement('div');
+            noItems.className = 'dropdown-item no-results';
+            noItems.textContent = 'No options available';
+            dropdownElement.appendChild(noItems);
+            return;
         }
         
-        // Add filtered items to dropdown
-        filteredItems.forEach(item => {
-            const itemElement = document.createElement('div');
-            itemElement.className = 'dropdown-item';
-            itemElement.textContent = item;
-            dropdownElement.appendChild(itemElement);
+        // Filter items based on input
+        const filteredItems = filter ? 
+            itemsList.filter(item => item.toLowerCase().includes(filter.toLowerCase())) : 
+            itemsList;
+        
+        // Sort exact matches to the top
+        filteredItems.sort((a, b) => {
+            if (a.toLowerCase() === filter.toLowerCase()) return -1;
+            if (b.toLowerCase() === filter.toLowerCase()) return 1;
+            return 0;
         });
         
-        // Show "no results" message if no items match
-        if (filteredItems.length === 0 && searchTerm) {
+        // Limit to 10 items
+        const displayItems = filteredItems.slice(0, 10);
+        
+        // Add filtered items to dropdown
+        if (displayItems.length > 0) {
+            displayItems.forEach((item, index) => {
+                const option = document.createElement('div');
+                option.className = 'dropdown-item';
+                option.textContent = item;
+                
+                // Highlight first item by default
+                if (index === 0) {
+                    option.classList.add('active');
+                }
+                
+                dropdownElement.appendChild(option);
+            });
+        } else {
+            // Show "no results" message if no items match
             const noResults = document.createElement('div');
             noResults.className = 'dropdown-item no-results';
             noResults.textContent = 'No matches found';
             dropdownElement.appendChild(noResults);
         }
+        
+        // Show dropdown if it has content
+        if (dropdownElement.children.length > 0) {
+            dropdownElement.style.display = 'block';
+        } else {
+            dropdownElement.style.display = 'none';
+        }
     }
     
     /**
-     * Handle keyboard navigation in dropdown
+     * Handle keyboard navigation in dropdowns
      */
-    function handleDropdownKeyboard(event, dropdownElement, inputElement) {
+    function handleDropdownKeyNav(e, dropdownElement, inputElement) {
+        const active = dropdownElement.querySelector('.dropdown-item.active');
         const items = dropdownElement.querySelectorAll('.dropdown-item:not(.no-results)');
-        let activeItem = dropdownElement.querySelector('.dropdown-item.active');
-        let activeIndex = -1;
         
-        // Find current active item index
-        if (activeItem) {
-            for (let i = 0; i < items.length; i++) {
-                if (items[i] === activeItem) {
-                    activeIndex = i;
-                    break;
-                }
-            }
-        }
+        if (items.length === 0) return;
         
-        switch (event.key) {
+        switch (e.key) {
             case 'ArrowDown':
-                event.preventDefault();
-                if (activeItem) activeItem.classList.remove('active');
-                
-                // Move to next item or first if at end
-                activeIndex = (activeIndex + 1) % items.length;
-                items[activeIndex].classList.add('active');
-                ensureVisible(items[activeIndex], dropdownElement);
+                e.preventDefault();
+                if (active) {
+                    active.classList.remove('active');
+                    const next = active.nextElementSibling || items[0];
+                    next.classList.add('active');
+                    ensureVisible(next, dropdownElement);
+                } else {
+                    items[0].classList.add('active');
+                }
                 break;
                 
             case 'ArrowUp':
-                event.preventDefault();
-                if (activeItem) activeItem.classList.remove('active');
-                
-                // Move to previous item or last if at beginning
-                activeIndex = (activeIndex - 1 + items.length) % items.length;
-                items[activeIndex].classList.add('active');
-                ensureVisible(items[activeIndex], dropdownElement);
+                e.preventDefault();
+                if (active) {
+                    active.classList.remove('active');
+                    const prev = active.previousElementSibling || items[items.length - 1];
+                    prev.classList.add('active');
+                    ensureVisible(prev, dropdownElement);
+                } else {
+                    items[items.length - 1].classList.add('active');
+                }
                 break;
                 
             case 'Enter':
-                if (activeItem) {
-                    event.preventDefault();
-                    inputElement.value = activeItem.textContent;
+                if (active) {
+                    e.preventDefault();
+                    inputElement.value = active.textContent;
                     dropdownElement.style.display = 'none';
                     
                     // Trigger an input event to update button states

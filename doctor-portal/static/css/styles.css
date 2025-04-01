@@ -436,9 +436,10 @@ label {
     background: var(--hover-color);
 }
 
-.dropdown-item.add-new {
-    color: var(--primary);
-    font-weight: 500;
+.dropdown-item.no-results {
+    color: var(--text-secondary);
+    font-style: italic;
+    pointer-events: none;
 }
 
 /* Results */
@@ -894,4 +895,10 @@ footer {
     padding: 30px;
     color: var(--text-secondary);
     font-style: italic;
+}
+
+/* Ensure the container has position relative */
+.input-wrapper {
+    position: relative;
+    width: 100%;
 } 
